@@ -35,9 +35,10 @@ When the user provides a company name or URL, search the following sources using
 1. **Glassdoor:** `[company name] Glassdoor reviews` → Overall rating, CEO approval, recommendation rate, pro/con reviews
 2. **Kununu:** `[company name] Kununu Bewertungen` → German market employee reviews
 3. **Levels.fyi:** `[company name] levels.fyi engineer salary Germany` → Salary data
-4. **LinkedIn:** `[company name] Principal Engineer SRE jobs Munich` → Open positions
-5. **Remotely.de:** `[company name] remotely.de` → Remote job listings
-6. **General:** `[company name] employee benefits Germany equity RSU` → Benefits
+4. **LinkedIn:** `[company name] Principal Engineer SRE Staff Engineer jobs Munich remote` → Open positions with job detail links
+5. **Remotely.de:** `[company name] remotely.de engineer` → Remote job listings with job detail links
+6. **Company careers page:** `[company name] careers jobs Principal Engineer SRE` → Direct listings on their own site
+7. **General:** `[company name] employee benefits Germany equity RSU` → Benefits
 
 For missing data, write "data not available" — **never guess**.
 
@@ -86,12 +87,22 @@ Produce the following report in English for each company:
 | English-speaking Environment | ✅/⚠️/❌ | |
 | Engineering/IC Culture | ✅/⚠️/❌ | |
 
-#### 🔗 SOURCES & OPEN POSITIONS
+#### 💼 OPEN POSITIONS
+List every relevant open position found. For each one:
+
+| Title | Location | Work Model | Salary (if listed) | Posted | Link |
+|-------|----------|------------|--------------------|--------|------|
+| [Job Title] | [City / Remote] | Remote / Hybrid / On-site | €XXX,XXX or N/A | [date or "recent"] | [Apply](url) |
+
+Only include roles relevant to the candidate profile (Principal Engineer, Staff Engineer, SRE, EM, Solutions Architect, Team Lead). Skip unrelated roles. If no relevant positions are found, write "No matching open positions found."
+
+#### 🔗 SOURCES
 - 🔍 Glassdoor: [link]
 - 🔍 Kununu: [link]
 - 💰 Levels.fyi: [link]
-- 💼 LinkedIn Listings: [positions found]
-- 🌐 Remotely.de: [positions found]
+- 💼 LinkedIn Jobs: [link]
+- 🌐 Remotely.de: [link]
+- 🏢 Careers Page: [link]
 
 #### 🏁 OVERALL ASSESSMENT
 **Decision:** 🟢 APPLY | 🟡 RESEARCH | 🔴 SKIP

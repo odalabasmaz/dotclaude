@@ -26,7 +26,8 @@ Each report includes:
 - **💰 Salary & Package** — Base salary estimates, equity (RSU/ESOP), bonus, benefits
 - **✅ Pros / ❌ Cons** — Most common employee feedback
 - **🎯 Candidate Fit** — Stack, role, location, salary, culture fit
-- **🔗 Sources** — Direct links to job listings
+- **💼 Open Positions** — Relevant roles with title, location, work model, salary (if listed), and direct apply links (LinkedIn, Remotely.de, careers page)
+- **🔗 Sources** — Reference links for all data sources
 - **🏁 Decision** — 🟢 Apply / 🟡 Research / 🔴 Skip
 
 Multiple companies get a comparison table at the end.
