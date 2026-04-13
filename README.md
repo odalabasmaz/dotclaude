@@ -19,7 +19,7 @@ Skills are modular instruction packages for [Claude Code](https://docs.anthropic
 
 | Skill | Description | Language |
 |-------|-------------|----------|
-| [job-evaluator](./skills/job-evaluator/) | Evaluates companies against a personal career profile using Glassdoor, Kununu, Levels.fyi, LinkedIn, Remotely.de | 🇬🇧 English |
+| [job-evaluator](./skills/job-evaluator/) | Evaluates companies against a personal career profile using Glassdoor, Kununu, Levels.fyi, Comprehensive.io, LinkedIn, Xing, Indeed.de, Monster.de, Remotely.de, Layoffs.fyi | 🇬🇧 English |
 
 ## Installation
 

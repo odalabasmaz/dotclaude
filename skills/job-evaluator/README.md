@@ -1,6 +1,6 @@
 # job-evaluator
 
-A Claude Code skill that evaluates companies against a personal career profile. Given a company name or URL, it searches Glassdoor, Kununu, Levels.fyi, LinkedIn, and Remotely.de and produces a structured English-language report.
+A Claude Code skill that evaluates companies against a personal career profile. Given a company name or URL, it searches Glassdoor, Kununu, Levels.fyi, Comprehensive.io, LinkedIn, Xing, Indeed.de, Monster.de, Remotely.de, and Layoffs.fyi, and produces a structured English-language report.
 
 ## Usage
 
@@ -22,11 +22,12 @@ The skill triggers automatically — no slash command needed.
 
 Each report includes:
 
-- **⚡ Quick Overview** — Glassdoor/Kununu scores, CEO approval, recommendation rate
-- **💰 Salary & Package** — Base salary estimates, equity (RSU/ESOP), bonus, benefits
+- **⚡ Quick Overview** — Glassdoor/Kununu scores, CEO approval, recommendation rate, recent layoffs
+- **⚠️ Layoff History** — Events from Layoffs.fyi with dates, size, and reasons
+- **💰 Salary & Package** — Market ranges from Comprehensive.io and Levels.fyi, equity (RSU/ESOP), bonus, benefits
 - **✅ Pros / ❌ Cons** — Most common employee feedback
-- **🎯 Candidate Fit** — Stack, role, location, salary, culture fit
-- **💼 Open Positions** — Relevant roles with title, location, work model, salary (if listed), and direct apply links (LinkedIn, Remotely.de, careers page)
+- **🎯 Candidate Fit** — Stack, role, location, salary, culture, and stability fit
+- **💼 Open Positions** — Relevant roles consolidated from LinkedIn, Xing, Indeed.de, Monster.de, Remotely.de, and the company careers page — with title, location, work model, salary (if listed), and direct apply links
 - **🔗 Sources** — Reference links for all data sources
 - **🏁 Decision** — 🟢 Apply / 🟡 Research / 🔴 Skip
 
