@@ -31,7 +31,9 @@ git clone https://github.com/odalabasmaz/dotclaude.git ~/dotclaude
 
 # Symlink a skill into Claude Code's skills directory
 mkdir -p ~/.claude/skills
-ln -s ~/dotclaude/skills/job-evaluator ~/.claude/skills/job-evaluator
+
+mkdir -p ~/.claude/skills/job-evaluator
+ln -s ~/dotclaude/skills/job-evaluator/SKILL.md ~/.claude/skills/job-evaluator/SKILL.md
 ```
 
 Or copy manually:
