@@ -4,6 +4,8 @@ A Claude Code skill that turns any topic into a structured, multi-perspective re
 
 Given a topic (and optionally a professional role), it simulates five expert perspectives, maps where they contradict each other, synthesizes the findings into an executive-ready briefing, and finishes with a self-critical peer review — all in a single response.
 
+Credits to Nav Toor: https://x.com/heynavtoor/status/2067194761446920264
+
 ## Usage
 
 ```
