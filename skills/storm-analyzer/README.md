@@ -59,7 +59,7 @@ Restart Claude Code after installation.
 
 | File | Purpose |
 |------|---------|
-| `storm-analyzer.skill` | Packaged skill archive containing `SKILL.md` (the prompt template and instructions) |
+| `SKILL.md` | The prompt template and instructions |
 | `README.md` | This file |
 
 ## License
