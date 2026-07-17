@@ -148,6 +148,34 @@ List every source searched and whether it returned relevant data:
 
 ---
 
+## Interview Prep Section
+
+Append this section whenever the user is actively pursuing, interviewing with, or preparing to talk to the company (not just scanning/comparing options). If the user only wants a scan/comparison, this section may be omitted — but default to including it once any interview, recruiter conversation, or call is mentioned or scheduled.
+
+Base this section on **everything gathered above** (company research) **plus any context the user has shared** (recruiter messages, LinkedIn threads, prior conversation notes, self-disclosed gaps). Do not fabricate an interview process, interviewer names, or company facts not found in research or given by the user — mark unconfirmed process details as inferred/unconfirmed.
+
+### 🧠 INTERVIEW PREP
+
+#### A. What you must know walking in
+Numbered list of the handful of facts/context that matter most for this specific conversation: company-stage realities (pivots, funding gaps, leadership changes), anything the user has already disclosed or discussed with the company, and any framing (taglines, filtering criteria, "not ideal if" disqualifiers) the company uses to screen candidates.
+
+#### B. Likely interview process
+Describe the process **only from what was found or shared** — stages, format, who's involved. If no structured process data exists, say so explicitly and infer a *plausible* shape only from company size/stage, clearly labelled as inferred.
+
+#### C. Questions you're likely to face — and how to answer
+For each likely question (grounded in the job posting's stated requirements/disqualifiers, the company's domain, and any gaps between the posting and the candidate's PROFILE.md), give a concrete, candidate-specific angle to answer it — referencing the candidate's real background/projects from PROFILE.md rather than generic advice.
+
+#### D. Questions YOU should ask
+List questions the candidate should ask that (a) de-risk the specific red flags/unknowns found in this research (funding, leadership gaps, role ambiguity, undisclosed comp) and (b) signal seniority appropriate to the candidate's target roles.
+
+#### E. How to impress — unfair advantages
+Tie the candidate's specific PROFILE.md background (named projects, metrics, domain experience) to what this company's posting/culture explicitly says it wants. Prefer concrete proof points over generic strengths.
+
+#### F. Gaps — name them before they do
+List the candidate's real gaps against this specific role (tech stack, language/location requirements, domain experience, seniority framing) and how to address each honestly, consistent with how the candidate has already framed similar gaps in any prior conversation shared with you.
+
+---
+
 ## Multiple Companies
 
 If the user provides multiple companies, run the full report for each, then append a comparison table:
@@ -159,11 +187,29 @@ If the user provides multiple companies, run the full report for each, then appe
 
 ---
 
+## Output & Indexing (career workspace)
+
+When this skill is run inside the career workspace (`~/workspace/career`), every analysis MUST be persisted as markdown **and** published as an indexed HTML page in the doc hub. Do this automatically — do not leave the report only in chat.
+
+1. **Write the markdown source** to `interviews/<company>/<name>.md` (e.g. `interviews/holidu/holidu-analysis.md`). The company is the slug the user gives or the company's name; `<name>` is descriptive (`<company>-analysis`, `<company>-em`, etc.). Never put `.html` in the source `interviews/` tree.
+2. **Publish + index in one step** by running the repo tool:
+   ```
+   python3 tools/publish_analysis.py interviews/<company>/<name>.md [more.md ...]
+   ```
+   It converts each markdown to `html/interviews/<company>/<name>.html` using the shared doc-hub shell, rebuilds the **Interviews** sidebar section from the `html/interviews/` filesystem (so the new page is automatically navigable from `index.html` → `welcome.html`), and stamps the complete nav (correct relative paths + active/open state) into every page. Existing nav labels are preserved.
+3. **Verify:** the new leaf appears in the sidebar, the page opens with the shell, and there are no dead links. If you added markdown by hand later, re-run `python3 tools/publish_analysis.py --nav-only` to re-index.
+
+Conventions: source `.md` lives under `interviews/<company>/`; generated `.html` mirrors it under `html/interviews/<company>/`. Never hand-author HTML in the source tree, and never leave a generated page unindexed.
+
+---
+
 ## Behavioural Rules
 
 - Write in **English** regardless of the user's input language.
+- In the career workspace, always persist the report as markdown and publish it via `tools/publish_analysis.py` so it is indexed and navigable (see **Output & Indexing**).
 - Never produce placeholder text in the final output — if data is missing, say so explicitly.
 - Do not add commentary beyond what was found in sources.
 - Do not suggest the candidate "may want to verify" something that you could search for yourself — search it first.
 - Use the salary floor and equity preference from PROFILE.md as the threshold for ✅/⚠️/❌ in Candidate Fit.
 - Layoffs within the last 12 months: flag as ⚠️ in both QUICK OVERVIEW and CANDIDATE FIT.
+- Include the **Interview Prep** section whenever the user is actively interviewing, has a call scheduled, or has shared recruiter/interviewer conversation context — not for a pure scan/comparison request.
