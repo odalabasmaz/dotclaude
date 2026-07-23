@@ -205,7 +205,11 @@ repo:
 
 - **Logs go to `stderr` (`console.error`), never `stdout`.** stdout is the
   JSON-RPC channel; anything else written there corrupts framing. This is
-  the single most common first bug when writing a new server.
+  the single most common first bug when writing a new server. Logs should be
+  **structured** (one JSON object per line: timestamp, level, tool name,
+  a per-call correlation/request ID) rather than bare strings — a bare
+  `console.error("done")` is useless once two chained tool calls interleave
+  their output on the same stream.
 - **Validate with zod, not ad-hoc checks**, and `.describe()` every field —
   the schema is both runtime validation *and* the signature the model sees.
   Cross-field rules zod can't express (e.g. `end` after `start`) go in the
@@ -307,6 +311,51 @@ credentials are missing — never falling back silently. See `calendar`'s
 concurrency caveat ("this backend's idempotency check is check-then-insert,
 not atomic, because the underlying API has no compare-and-swap").
 
+### Resilience, resource bounds, and cost
+
+These apply to any server that calls a real external API or accumulates
+state — skip only for a genuinely trivial, low-volume read-only tool.
+
+- **Retry transient upstream failures with backoff; don't retry client
+  errors.** A `429` or `5xx` deserves 2–3 retries with exponential backoff
+  (honor a `Retry-After` header if the upstream sends one); a `4xx` other
+  than `429` means the request itself is wrong and retrying just repeats the
+  same failure. This is separate from the timeout in Step 3 — timeout
+  handles a hung call, retry handles one that failed cleanly and may
+  succeed on a second attempt.
+  ```ts
+  async function fetchWithRetry(url: string, opts: RequestInit, maxRetries = 2) {
+    for (let attempt = 0; ; attempt++) {
+      const res = await fetch(url, opts);
+      if (res.ok || attempt >= maxRetries) return res;
+      if (res.status !== 429 && res.status < 500) return res; // don't retry client errors
+      const retryAfter = Number(res.headers.get("retry-after")) || 2 ** attempt;
+      await new Promise((r) => setTimeout(r, retryAfter * 1000));
+    }
+  }
+  ```
+- **Respect upstream rate limits, and protect the server's own callers from
+  them.** If the upstream publishes a rate limit, throttle outbound calls to
+  stay under it (a simple token bucket or minimum delay between calls is
+  enough — don't over-engineer). When a `429` still gets through after
+  retries, return a structured `toolError` that says so explicitly
+  ("upstream rate limit exceeded, retry later") rather than a generic
+  failure the model can't reason about.
+- **Bound in-memory state.** The default `InMemoryXBackend` (Step 3) is fine
+  for a demo, but state a size/TTL bound explicitly — either enforce one
+  (evict oldest, cap entries) or document plainly in the server's README
+  that it's unbounded and demo-only. Don't let an agent loop that calls a
+  mutating tool in a retry storm silently grow memory forever.
+- **Cost-aware by default, for metered/paid upstream APIs.** Document the
+  per-call cost (or quota) in the server's README next to the required env
+  vars. Avoid redundant calls within one tool invocation (don't fetch the
+  same resource twice to satisfy two internal checks). For a server likely
+  to see high call volume, consider a soft usage cap via env var (e.g.
+  `<NAME>_MAX_CALLS_PER_DAY`) that fails closed with a clear message once
+  hit, rather than letting a runaway agent loop rack up an unbounded bill.
+  This is the same "affordable at scale" bar the `sdlc-architect` persona
+  applies to full systems — apply it here too, just lighter-weight.
+
 ## Step 4 — Wire up scripts and docs
 
 For a server named `<name>`:
@@ -358,7 +407,10 @@ this inline only if those subagents aren't installed.
    - idempotent retry (same key called twice → second call reports "already
      done", doesn't duplicate),
    - one real external-API call end-to-end if the server hits the network
-     (don't just trust the mock).
+     (don't just trust the mock),
+   - if the server retries transient failures: a simulated `429`/`5xx`
+     actually gets retried and eventually surfaces a clear `toolError` once
+     retries are exhausted, and a `4xx` other than `429` is *not* retried.
 4. **MCP Inspector** for interactive/visual verification —
    `npm run inspect:<name>` runs the TypeScript source directly via `tsx`
    (no build needed for this loop). Tabs: Tools / Resources / Prompts / Ping;

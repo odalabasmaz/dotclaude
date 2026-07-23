@@ -21,6 +21,10 @@ run available security/dependency scanners and linters — don't assume, verify.
 - **Input validation** — all external input validated and sanitised at the boundary?
 - **Insecure defaults** — permissive CORS, verbose errors leaking internals, debug endpoints,
   weak crypto, missing TLS?
+- **Rate limiting / resource exhaustion (DoS surface)** — can a caller flood an endpoint or tool
+  with no throttling? are external calls bounded by timeout *and* retry count (an unbounded retry
+  loop is its own DoS vector)? can unbounded input (size, recursion, batch count) exhaust memory,
+  disk, or an unmetered downstream API's quota?
 - **Dependencies / supply chain** — known-vulnerable or unmaintained dependencies? pinned?
 - **Data exposure** — PII/sensitive data handled and logged appropriately? least privilege for
   IAM roles/policies?

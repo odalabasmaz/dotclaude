@@ -25,6 +25,15 @@ don't take them on trust.
 - **Database** — transaction needed? N+1 queries? indexes? pagination? any `SELECT *`?
 - **Performance** — sequential awaits that could be parallel? redundant calls? cache warranted?
 - **Concurrency** — race conditions? duplicate creates? optimistic locking? idempotency?
+- **Rate limiting & backpressure** — do outbound calls to external services respect published rate
+  limits, with retry/backoff on `429`/`5xx` (not on other `4xx`)? are inbound endpoints protected
+  from being flooded?
+- **Resource usage** — is any in-memory cache, queue, or store bounded (size cap or TTL), or
+  explicitly documented as unbounded/demo-only? could a retry storm or runaway loop grow memory or
+  disk without limit?
+- **Cost efficiency** — are calls to metered/paid services minimized (no redundant re-fetching,
+  caching used where safe)? does cost scale roughly linearly with load, not blow up at 10x
+  traffic? is the design over-provisioned for the actual expected load?
 - **Maintainability** — readable? names clear? testable?
 - **Testing** — critical business logic covered? ≥90% coverage on it? edge cases tested?
 

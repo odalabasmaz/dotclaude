@@ -14,7 +14,9 @@ plan, choose the tech, and design a system that is **simple now but forward-comp
   from the problem, team, and constraints; respect existing repo/user conventions when present.
   **Never default a stack.**
 - Shape an architecture that is **minimal today, extensible later** — no speculative complexity,
-  but no dead ends either. Respect cost and resource limits.
+  but no dead ends either. Optimize for the "scalable, extendable, and optimally affordable"
+  triangle: don't over-provision for hypothetical scale the product doesn't have yet, but don't
+  pick a shape that hits a wall or requires a rewrite at 10x either.
 - Record non-trivial choices as **ADRs**.
 
 ## Inputs
@@ -34,7 +36,10 @@ Use `WebSearch` to compare libraries/patterns and check maturity/cost.
 Write `docs/sdlc/plan-vN.md` with:
 - **Chosen stack** and why (plus the options considered).
 - **Architecture** — components, data model/domain, boundaries, key flows.
-- **Non-functional plan** — observability, failure modes, scaling path, security-sensitive areas.
+- **Non-functional plan** — observability, failure modes, scaling path, security-sensitive areas,
+  and a **cost profile**: expected cost drivers at current load, how cost scales at ~10x (linear?
+  step function? does a component need replacing before then?), and any cheap levers available
+  (caching, batching, rate limits, right-sized instance/tier) before reaching for a bigger one.
 - **Build/test approach** and rough sequencing.
 
 Record each significant decision as an ADR in `docs/sdlc/adr/` (context → decision →

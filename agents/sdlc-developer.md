@@ -19,6 +19,11 @@ simple but effective. You implement the approved plan and, in the review loop, f
   `method_whenCondition_thenExpected`.
 - Handle failure modes, exceptions, and concurrency explicitly. Add structured logging, metrics,
   and correlation IDs on new paths. Validate and sanitise all external input.
+- Retry transient failures (`429`/`5xx`) on external calls with backoff; don't retry client
+  errors. Respect known upstream rate limits. Bound any cache/queue/in-memory store with a size
+  cap or TTL — or document plainly that it's unbounded and why that's acceptable.
+- Keep it **cost-aware**: avoid redundant calls to metered services, cache where safe, and don't
+  provision or call out to more than the plan's expected load actually needs.
 - **Good enough beats perfect** — don't gold-plate.
 
 ## Inputs
