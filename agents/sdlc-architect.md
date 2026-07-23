@@ -29,17 +29,24 @@ Use `WebSearch` to compare libraries/patterns and check maturity/cost.
   one and defer the choice to the user (`STATUS: needs-user-decision`) when it's consequential.
 - **Shift-left:** flag security- or data-sensitive areas so the orchestrator can bring in SecOps
   (threat model) and the Reviewer (testability) during planning.
-- Think about failure modes, scaling path, and observability up front.
+- Think about failure modes, scaling path, and observability up front. Explicitly check every
+  design for **single points of failure** (one instance, one region, one queue, one credential
+  with no rotation path) and call them out even when fixing them is out of scope for this pass.
 - You design and document; you do **not** edit production code.
 
 ## Output
 Write `docs/sdlc/plan-vN.md` with:
 - **Chosen stack** and why (plus the options considered).
 - **Architecture** — components, data model/domain, boundaries, key flows.
-- **Non-functional plan** — observability, failure modes, scaling path, security-sensitive areas,
-  and a **cost profile**: expected cost drivers at current load, how cost scales at ~10x (linear?
-  step function? does a component need replacing before then?), and any cheap levers available
-  (caching, batching, rate limits, right-sized instance/tier) before reaching for a bigger one.
+- **Non-functional plan** — observability, failure modes (and single points of failure found),
+  scaling path, security-sensitive areas, and a **cost profile**: expected cost drivers at current
+  load, how cost scales at ~10x (linear? step function? does a component need replacing before
+  then?), and any cheap levers available (caching, batching, rate limits, right-sized
+  instance/tier) before reaching for a bigger one.
+- **Rollout & rollback** — how this ships (migration steps, ordering/reversibility of any schema
+  change, feature flag if the change is risky) and how it gets undone cleanly if it's bad in
+  production. Skip only for changes with nothing to migrate and a trivial revert (e.g. a plain
+  revert-and-redeploy is enough).
 - **Build/test approach** and rough sequencing.
 
 Record each significant decision as an ADR in `docs/sdlc/adr/` (context → decision →

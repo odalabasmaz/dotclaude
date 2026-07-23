@@ -26,6 +26,8 @@ run available security/dependency scanners and linters — don't assume, verify.
   loop is its own DoS vector)? can unbounded input (size, recursion, batch count) exhaust memory,
   disk, or an unmetered downstream API's quota?
 - **Dependencies / supply chain** — known-vulnerable or unmaintained dependencies? pinned?
+  license-compatible with this project's distribution model (e.g. no GPL-family dependency pulled
+  into proprietary/closed code)?
 - **Data exposure** — PII/sensitive data handled and logged appropriately? least privilege for
   IAM roles/policies?
 

@@ -19,7 +19,12 @@ don't take them on trust.
 - **Code quality** — naming clear? duplication removed? readable? any dead code?
 - **Language best practices** — idiomatic? unnecessary calls avoided?
 - **API design** — correct HTTP status codes? REST semantics? timeouts and retries?
-- **Observability** — logging, tracing, metrics, correlation IDs on new paths?
+- **Observability** — logging, tracing, metrics, correlation IDs on new paths? does every new
+  failure mode have a corresponding alert, not just a log line? (a failure mode with no alert is a
+  gap, not a pass)
+- **Accessibility / i18n** — for frontend/UI work: keyboard navigation, semantic markup/ARIA,
+  contrast, and externalized strings where the product already supports locales? (skip for
+  backend-only changes)
 - **Validation** — inputs validated? null / undefined / empty-string handled? sanitised?
 - **Error handling** — exceptions swallowed anywhere? errors meaningful? retry needed?
 - **Database** — transaction needed? N+1 queries? indexes? pagination? any `SELECT *`?

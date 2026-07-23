@@ -158,6 +158,15 @@ sdlc uses before Analyze → Plan.
 - **Pagination**: if the upstream API paginates, expose the same params
   (`limit`/`page`) rather than inventing new semantics — passthrough matches
   upstream `numFound`/counts exactly and avoids off-by-one translation bugs.
+- **Set tool annotations, not just description text.** `registerTool`'s config
+  takes an `annotations` object (`readOnlyHint`, `destructiveHint`,
+  `idempotentHint`, `openWorldHint`) that lets the *client* decide whether to
+  gate a call behind human confirmation — this is the machine-readable form
+  of the read-only-vs-mutating call made in Step 1, not a restatement of it.
+  A tool with `destructiveHint: true` and no `idempotentHint` should make a
+  client pause before calling it; getting this wrong (e.g. leaving a
+  mutating tool's `readOnlyHint` at its default) undersells the risk to
+  every client, not just the one you tested with.
 
 ## Step 3 — Implement the server
 
@@ -182,6 +191,12 @@ server.registerTool(
     title: "Human title",
     description: "What it does. State read-only vs mutating explicitly.",
     inputSchema: { /* zod fields, each with .describe(...) */ },
+    annotations: {
+      readOnlyHint: true,      // false for any create/update/delete tool
+      destructiveHint: false,  // true if it can destroy data the caller can't get back
+      idempotentHint: false,   // true only if repeat calls with the same input are safe
+      openWorldHint: true,     // true if it calls an external/real-world system
+    },
   },
   async (input) => {
     // validate business rules tool-schema can't express, then act
@@ -199,6 +214,8 @@ main().catch((err) => {
   console.error("Fatal error starting <name>-mcp-server:", err);
   process.exit(1);
 });
+process.on("SIGTERM", () => process.exit(0));
+process.on("SIGINT", () => process.exit(0));
 ```
 
 Non-negotiable details, each backed by a concrete failure mode seen in this
@@ -210,7 +227,14 @@ repo:
   **structured** (one JSON object per line: timestamp, level, tool name,
   a per-call correlation/request ID) rather than bare strings — a bare
   `console.error("done")` is useless once two chained tool calls interleave
-  their output on the same stream.
+  their output on the same stream. **Don't log full tool inputs/outputs
+  verbatim** for any tool that handles PII or secrets (e.g. `calendar`
+  attendee emails, an API key echoed back in an error) — log identifiers
+  (event ID, not attendee list) and redact the rest.
+- **Handle `SIGTERM`/`SIGINT`** for a clean exit (see template above) — the
+  MCP client kills the child process on disconnect; without a handler this
+  still works for a stateless server but will silently drop any in-flight
+  write on a real backend that needs a flush/close step.
 - **Validate with zod, not ad-hoc checks**, and `.describe()` every field —
   the schema is both runtime validation *and* the signature the model sees.
   Cross-field rules zod can't express (e.g. `end` after `start`) go in the
@@ -379,6 +403,14 @@ snippet, a raw-JSON-RPC quick sanity check with the *expected* output stated)
 
 **Root `README.md`** — add a row to the servers table and a line to the
 `## Layout` tree.
+
+**Version the server, don't leave it at `1.0.0` forever.** The `version` in
+`new McpServer({ name, version })` is what a client sees and may cache a
+tool description against. Bump it (semver) whenever a tool's `inputSchema`
+changes in a breaking way (removed/renamed/retyped field) — a client
+holding the old description could otherwise call the new server with a
+shape it no longer accepts. Additive, backward-compatible changes (a new
+optional field) don't require a bump.
 
 ## Step 5 — Build and verify (do not skip this)
 
