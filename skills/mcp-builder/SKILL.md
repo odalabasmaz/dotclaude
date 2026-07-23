@@ -12,6 +12,47 @@ don't skip the verification step even under time pressure — it is what caught
 a real correctness bug (see "War story" below) that would otherwise have
 shipped silently.
 
+## Delegating to the SDLC personas
+
+This skill owns the MCP-specific know-how — repo layout, tool-surface design,
+conventions, docs, OAuth. It borrows three things from the `sdlc` skill via
+the **Agent tool**/`AskUserQuestion` instead of reinventing them: the
+up-front requirements-questioning discipline (Step 1), implementation
+(Step 3), and review (Step 5) — so scope gets the same "confirm before you
+build" gate, and code gets the same discipline and checklists, as any other
+sdlc-built project. This is a lightweight borrow of the personas' habits and
+tools, not a full sdlc run — no `docs/sdlc/` artifact trail or `STATE.md` is
+created.
+
+- **Gather requirements → `subagent_type: sdlc-product-manager` (optional,
+  larger builds only).** For a single well-scoped server, do Step 1 inline —
+  it's fast and the persona would add nothing. Delegate instead when the
+  request spans multiple servers, a non-obvious domain, or several
+  stakeholders' worth of "what should this actually do" — the PM persona's
+  whole job is scope + acceptance criteria; reuse it rather than
+  re-improvising. Give it the raw user request and get back scope +
+  acceptance criteria to feed Step 1's confirmation gate.
+- **Implement → `subagent_type: sdlc-developer`.** Give it: the target repo
+  path, the concrete tool surface decided in Steps 1–2 (names, schemas,
+  read-only vs mutating), and a pointer to **this file** (`skills/mcp-builder/
+  SKILL.md`) as the spec to follow for server shape, error handling, timeouts,
+  and the conflict/idempotency pattern in Step 3. Do not hand it vague intent —
+  hand it the resolved design.
+- **Verify → `sdlc-reviewer` + `sdlc-secops`, in parallel.** After the
+  Developer reports back, spawn both in one message: Reviewer checks
+  correctness against Step 5's test list (required-field-omitted, conflict
+  path with the optional key genuinely omitted, force/override, idempotent
+  retry); SecOps checks secrets/env-var handling, injection via tool inputs,
+  and the timeout/DoS surface on external calls. Route findings back to
+  `sdlc-developer` to fix; bound this to 3 rounds same as sdlc, then escalate
+  to the user with the open findings.
+- Steps 0–2, 4, and 6 (scaffolding, scope, wiring, OAuth) stay owned by this
+  skill and run inline — they're MCP-domain judgment calls, not implementation
+  or QA work.
+- If the `sdlc-developer`/`sdlc-reviewer`/`sdlc-secops` subagents aren't
+  installed (see `skills/sdlc/README.md#install`), fall back to doing Steps 3
+  and 5 inline as before — don't block on their availability.
+
 ## Step 0 — Find or create the shared repo
 
 This skill assumes a **shared multi-server repo**: one root `package.json` +
@@ -47,29 +88,50 @@ This skill assumes a **shared multi-server repo**: one root `package.json` +
    - Root `README.md` with a table of servers (path, one-line description)
      and a `## Layout` tree — every new server gets a row and a tree entry.
 
-## Step 1 — Clarify scope before writing code
+## Step 1 — Gather requirements and confirm scope before writing code
 
-If any of these are ambiguous from the request, ask one tight question
-(don't guess and build the wrong shape):
+Borrow sdlc's kickoff discipline here: **ask clarifying questions in one
+focused batch up front** (via `AskUserQuestion`) rather than guessing and
+building the wrong shape, and **don't start Step 2's design until scope is
+actually confirmed** — this is the same "gate before you invest" pattern
+sdlc uses before Analyze → Plan.
 
-- **Read-only or mutating?** Mutating tools (create/update/delete against a
-  real system) need conflict-checking, idempotency, and an explicit `force`
-  escape hatch (see Step 3). Read-only tools don't.
-- **What backs it?** A free/keyless public API (build it directly, no
-  config needed), an API requiring a key (env var, document it), or a
-  stateful system needing OAuth (see Step 5 — pluggable backend + auth
-  helper)?
-- **Does the upstream API only cover part of what the user described?**
-  Don't build tools that imply capability the backend doesn't have. (Example
-  from this repo: a user asked for a "search" server covering "books,
-  weather, countries & towns" via OpenLibrary — that API is books-only. The
-  fix was building a correctly-scoped `books` server and flagging the rest
-  needed separate backends, not stretching one tool's schema to imply
-  coverage it doesn't have.)
-- **Naming**: name the package/directory after the **domain**, not a generic
-  verb — `books`, not `search`; `weather`, not `data`. Tool names describe
-  the **action** and can differ from the package name (`search_books` inside
-  the `books` server).
+1. **Ask, in one batch, whatever of these is not already clear from the
+   request:**
+   - **What's the actual goal?** What should the model be able to *do* once
+     this server exists — what question should it answer or action should it
+     take? If the request names a feature but not the underlying need,
+     ask; building the literal ask instead of the actual need is the
+     failure mode this step exists to prevent.
+   - **Read-only or mutating?** Mutating tools (create/update/delete against
+     a real system) need conflict-checking, idempotency, and an explicit
+     `force` escape hatch (see Step 3). Read-only tools don't.
+   - **What backs it?** A free/keyless public API (build it directly, no
+     config needed), an API requiring a key (env var, document it), or a
+     stateful system needing OAuth (see Step 3's pluggable-backend pattern
+     and Step 6's auth helper)?
+   - **Does the upstream API only cover part of what the user described?**
+     Don't build tools that imply capability the backend doesn't have.
+     (Example from this repo: a user asked for a "search" server covering
+     "books, weather, countries & towns" via OpenLibrary — that API is
+     books-only. The fix was building a correctly-scoped `books` server and
+     flagging the rest needed separate backends, not stretching one tool's
+     schema to imply coverage it doesn't have.)
+   For a request that spans multiple servers or an unfamiliar domain, delegate
+   this gathering to `sdlc-product-manager` instead of improvising (see
+   "Delegating to the SDLC personas" above) and fold its scope/acceptance
+   criteria into the question batch or the confirmation below.
+2. **Naming**: name the package/directory after the **domain**, not a generic
+   verb — `books`, not `search`; `weather`, not `data`. Tool names describe
+   the **action** and can differ from the package name (`search_books` inside
+   the `books` server).
+3. **Confirm before proceeding.** Once scope is resolved, state back in 2–3
+   sentences what you're about to build (server name, read-only/mutating,
+   backend, the tools it will expose) and get explicit confirmation before
+   moving to Step 2 — same purpose as sdlc's "user confirms scope" gate.
+   Skip this restatement only when the request was already fully
+   unambiguous (e.g. "add a read-only tool wrapping the free FooBar API's
+   `/status` endpoint").
 
 ## Step 2 — Design the tool surface
 
@@ -97,6 +159,11 @@ If any of these are ambiguous from the request, ask one tight question
   upstream `numFound`/counts exactly and avoids off-by-one translation bugs.
 
 ## Step 3 — Implement the server
+
+**Delegate this step to `sdlc-developer`** (see "Delegating to the SDLC
+personas" above) — give it the resolved tool surface from Steps 1–2 plus this
+section as the spec. Fall back to implementing inline only if that subagent
+isn't installed.
 
 Core shape, every server:
 
@@ -266,7 +333,10 @@ snippet, a raw-JSON-RPC quick sanity check with the *expected* output stated)
 ## Step 5 — Build and verify (do not skip this)
 
 This is not optional polish — it is how real bugs get caught before a user
-does.
+does. **Delegate the review portion to `sdlc-reviewer` + `sdlc-secops` in
+parallel** (see "Delegating to the SDLC personas" above) once build + smoke
+test pass; route their findings back to `sdlc-developer`. Fall back to doing
+this inline only if those subagents aren't installed.
 
 1. `npm run build` from repo root. Must be clean (no tsc errors) before
    anything else.
