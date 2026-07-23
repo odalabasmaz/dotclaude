@@ -55,12 +55,13 @@ if everything looks fine:
    focused pass and the same coding discipline as any sdlc-built project.
 5. **Wire up scripts and docs** — `package.json` bin/scripts, per-server
    README template, root README table + layout update.
-6. **Build and verify — never skipped** — `npm run build`, a raw-JSON-RPC
-   smoke test, explicit edge-case tests (especially the optional-field-
-   omitted case, where the real bug hid), and the MCP Inspector for
-   interactive checks. Only reports done after this passes. Review of the
-   result (correctness + security) is **delegated to `sdlc-reviewer` and
-   `sdlc-secops` in parallel** when installed.
+6. **Build and verify — never skipped** — `npm run build`, an automated
+   Vitest suite committed alongside the server (happy paths, validation
+   errors, and edge cases — especially the optional-field-omitted case,
+   where the real bug hid), a one-time real-API smoke test, and the MCP
+   Inspector for interactive checks. Only reports done after this passes.
+   Review of the result (correctness + security) is **delegated to
+   `sdlc-reviewer` and `sdlc-secops` in parallel** when installed.
 7. **Optional OAuth setup** — for servers that need to authenticate against
    a real user account (e.g. a real calendar), a one-time local
    refresh-token helper script, not interactive auth inside the server

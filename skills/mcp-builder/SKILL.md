@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: Scaffolds and implements new Model Context Protocol (MCP) servers in TypeScript, following the conventions validated in the mcp-servers repo (infra, calendar, books, weather) — shared build, per-server tools/resources/prompts, structured errors, pluggable backends, idempotency/conflict gating, and mandatory build+smoke-test verification before declaring done. Use this skill when the user asks to "add an MCP server", "build an MCP tool for X", "create an MCP server that does Y", or wants to expose an API/service/data source to an LLM agent via MCP.
+description: Scaffolds and implements new Model Context Protocol (MCP) servers in TypeScript, following the conventions validated in the mcp-servers repo (infra, calendar, books, weather) — shared build, per-server tools/resources/prompts, structured errors, pluggable backends, idempotency/conflict gating, and mandatory build+automated-test+smoke-test verification before declaring done. Use this skill when the user asks to "add an MCP server", "build an MCP tool for X", "create an MCP server that does Y", or wants to expose an API/service/data source to an LLM agent via MCP.
 ---
 
 # MCP Builder
@@ -66,7 +66,8 @@ This skill assumes a **shared multi-server repo**: one root `package.json` +
    older `tool()` API, etc.) rather than the template below verbatim.
 2. If nothing exists yet, scaffold the shared skeleton first:
    - `package.json`: `"type": "module"`, deps `@modelcontextprotocol/sdk` +
-     `zod`, devDeps `@types/node` + `tsx` + `typescript`.
+     `zod`, devDeps `@types/node` + `tsx` + `typescript` + `vitest`, plus a
+     root `"test": "vitest run"` script.
    - `tsconfig.json`:
      ```json
      {
@@ -389,8 +390,30 @@ this inline only if those subagents aren't installed.
 
 1. `npm run build` from repo root. Must be clean (no tsc errors) before
    anything else.
-2. **Raw JSON-RPC smoke test** — this is faster than the Inspector for
-   scripted verification and is what caught the idempotency bug above:
+2. **Automated test suite — required, not optional.** Write
+   `src/<name>/server.test.ts` (Vitest) that calls the server's tool
+   handlers directly (import them, or drive the server over an in-process
+   `StdioServerTransport` pair) and **persists in the repo** so it re-runs in
+   CI on every future change — this is the gap a one-off manual smoke test
+   doesn't close. Cover, at minimum:
+   - the happy path for each tool,
+   - required-field-omitted validation errors,
+   - a mutating tool's conflict path *with the optional field genuinely
+     omitted*, not just populated (this exact gap caused the idempotency bug
+     in the war story above — a manual smoke test caught it once; a
+     regression test keeps it caught),
+   - `force`/override paths,
+   - idempotent retry (same key called twice → second call reports "already
+     done", doesn't duplicate),
+   - if the server retries transient failures: a simulated `429`/`5xx`
+     actually gets retried and eventually surfaces a clear `toolError` once
+     retries are exhausted, and a `4xx` other than `429` is *not* retried.
+   Run via `npm test` (root `vitest run`); it must be clean before moving on.
+   Mock the external HTTP layer for these (real upstream calls belong in
+   step 3, not the suite that runs on every commit).
+3. **One real external-API call end-to-end**, if the server hits the
+   network, run manually once (don't just trust the mock in step 2) —
+   either via the raw JSON-RPC smoke test below or the Inspector:
    ```bash
    printf '%s\n' \
    '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"c","version":"0"}}}' \
@@ -399,18 +422,6 @@ this inline only if those subagents aren't installed.
    '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"<tool>","arguments":{...}}}' \
    | node dist/<name>/server.js
    ```
-3. **Test the cases that break things, not just the happy path**:
-   - required-field-omitted validation errors,
-   - a mutating tool's conflict path *with the optional field genuinely
-     omitted*, not just populated,
-   - `force`/override paths,
-   - idempotent retry (same key called twice → second call reports "already
-     done", doesn't duplicate),
-   - one real external-API call end-to-end if the server hits the network
-     (don't just trust the mock),
-   - if the server retries transient failures: a simulated `429`/`5xx`
-     actually gets retried and eventually surfaces a clear `toolError` once
-     retries are exhausted, and a `4xx` other than `429` is *not* retried.
 4. **MCP Inspector** for interactive/visual verification —
    `npm run inspect:<name>` runs the TypeScript source directly via `tsx`
    (no build needed for this loop). Tabs: Tools / Resources / Prompts / Ping;
