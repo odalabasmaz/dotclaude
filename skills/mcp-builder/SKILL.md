@@ -1,6 +1,6 @@
 ---
 name: mcp-builder
-description: Scaffolds and implements new Model Context Protocol (MCP) servers in TypeScript, following the conventions validated in the mcp-servers repo (infra, calendar, books, weather) — shared build, per-server tools/resources/prompts, structured errors, pluggable backends, idempotency/conflict gating, and mandatory build+automated-test+smoke-test verification before declaring done. Use this skill when the user asks to "add an MCP server", "build an MCP tool for X", "create an MCP server that does Y", or wants to expose an API/service/data source to an LLM agent via MCP.
+description: Scaffolds and implements new Model Context Protocol (MCP) servers in TypeScript, following the conventions validated in the mcp-servers repo (infra, calendar, books, weather) — shared build, per-server tools/resources/prompts, structured errors, pluggable backends, idempotency/conflict gating, effort modes (low/medium/high), and mandatory build+smoke-test verification (plus a committed automated test suite at medium/high) before declaring done. Use this skill when the user asks to "add an MCP server", "build an MCP tool for X", "create an MCP server that does Y", or wants to expose an API/service/data source to an LLM agent via MCP.
 ---
 
 # MCP Builder

@@ -33,7 +33,7 @@ escalation. Subagents do the domain thinking and return a structured result (see
 | `sdlc-ceo` | CEO | Vision, business direction, cost/ROI framing, go/no-go on direction |
 | `sdlc-product-manager` | Product Manager | Requirements, scope, problem statement, acceptance criteria → `analyze-vN.md` |
 | `sdlc-architect` | Architect | Tech stack, system design, trade-offs, cost/resource limits → `plan-vN.md` + ADRs |
-| `sdlc-developer` | Developer | Implementation, tests (≥90% on critical logic), dev docs → `dev-vN.md` + code |
+| `sdlc-developer` | Developer | Implementation, tests (per effort; ≥90% on critical logic at `high`), `README.md`/`SPEC.md` + `dev-vN.md` + code |
 | `sdlc-reviewer` | Reviewer (+ QA) | Quality/correctness/performance gate **and QA** (test-plan review, edge-case matrix) → `review-vN.md` |
 | `sdlc-secops` | SecOps | Security review — vulns, authz gaps, secret handling → `security-vN.md` |
 
@@ -111,8 +111,9 @@ compatible** — extensible later without over-engineering today. Sees long-term
 historical analogues; respects cost limits.
 
 **Developer** — Builds it and lives with it. Challenges decisions from a practical angle.
-Implements to spec, keeps it simple but effective, writes tests to **≥90% coverage on critical
-business logic**, and produces developer documentation.
+Implements to spec, keeps it simple but effective, writes tests to the depth the effort calls for
+(**≥90% coverage on critical business logic** at `high`), and produces the product docs
+(`README.md`/`SPEC.md`).
 
 **Reviewer** — The skeptical gate before "go live", and the owner of the **QA hat** (there is no
 separate QA persona). Verifies the product solves the *right* problem the *right* way: correctness,
@@ -182,7 +183,8 @@ role on small projects. **Pass the chosen effort into every persona invocation.*
 
 ### Phase 3 — Dev  *(owner: Developer)*
 - Implement to the approved plan. Clean code, wise naming, comments where they earn their place.
-- Write tests (≥90% on critical logic). Generate the required documentation (§8).
+- Write tests to the depth the effort calls for (≥90% on critical logic at `high`; major
+  functionality at `medium`; none at `low`). Generate the required documentation (§8).
 - **Output:** working code + `dev-vN.md`. **Gate:** build + tests + coverage pass locally.
 
 ### Phase 4 — Review  *(owners: Reviewer + SecOps, run in parallel)*

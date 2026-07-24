@@ -52,7 +52,8 @@ don't take them on trust.
   caching used where safe)? does cost scale roughly linearly with load, not blow up at 10x
   traffic? is the design over-provisioned for the actual expected load?
 - **Maintainability** — readable? names clear? testable?
-- **Testing** — critical business logic covered? ≥90% coverage on it? edge cases tested?
+- **Testing** — critical business logic covered? edge cases tested? (≥90% coverage on it at `high`;
+  major functionality at `medium`) — and see the QA section below.
 
 ## QA — test-plan review & edge-case matrix
 Beyond reviewing code, act as QA on the tests themselves. This is what fills the "no dedicated QA

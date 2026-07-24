@@ -28,8 +28,8 @@ Skills are modular instruction packages for [Claude Code](https://docs.anthropic
 | Skill | Description | Language |
 |-------|-------------|----------|
 | [job-evaluator](./skills/job-evaluator/) | Evaluates companies against a personal career profile using Glassdoor, Kununu, Levels.fyi, Comprehensive.io, LinkedIn, Xing, Indeed.de, Monster.de, Remotely.de, Layoffs.fyi | 🇬🇧 English |
-| [mcp-builder](./skills/mcp-builder/) | Scaffolds and implements TypeScript MCP servers — shared repo layout, tool-surface design, idempotency/conflict gating, tool annotations, resilience/cost guardrails, and mandatory automated-test + smoke-test verification. Can delegate implementation/review to the `sdlc-*` subagents. | 🇬🇧 English |
-| [sdlc](./skills/sdlc/) | Runs a full software development lifecycle (Analyze → Plan → Dev → Monitor) as a six-persona software company; orchestrates the `sdlc-*` subagents. Stack-agnostic. | 🇬🇧 English |
+| [mcp-builder](./skills/mcp-builder/) | Scaffolds and implements TypeScript MCP servers — shared repo layout, tool-surface design, idempotency/conflict gating, tool annotations, resilience/cost guardrails, low/medium/high effort modes, existing-convention matching, and mandatory smoke-test verification (+ committed test suite at medium/high). Can delegate implementation/review to the `sdlc-*` subagents. | 🇬🇧 English |
+| [sdlc](./skills/sdlc/) | Runs a full software development lifecycle (Analyze → Plan → Dev → Monitor) as a six-persona software company; orchestrates the `sdlc-*` subagents. Stack-agnostic, with low/medium/high effort modes, explore-the-existing-repo-first discipline, and durable `README.md`/`SPEC.md` deliverables. | 🇬🇧 English |
 | [storm-analyzer](./skills/storm-analyzer/) | Turns any topic into a structured, STORM-style analysis by simulating five expert perspectives, mapping contradictions, and synthesizing an executive-ready briefing with a role-tailored peer review. | 🇬🇧 English |
 
 ## Agents
@@ -42,8 +42,8 @@ Subagents are specialised personas that skills (or you) delegate to. Drop them i
 | `sdlc-ceo` | Direction, value/cost/ROI, go/no-go |
 | `sdlc-product-manager` | Scope, requirements, acceptance criteria |
 | `sdlc-architect` | Tech stack, architecture, ADRs |
-| `sdlc-developer` | Implementation, tests, docs |
-| `sdlc-reviewer` | Quality / correctness / performance review gate |
+| `sdlc-developer` | Implementation, tests, docs (`README.md`/`SPEC.md`) |
+| `sdlc-reviewer` | Quality / correctness / performance review gate **+ QA** (test-plan review, edge-case matrix) |
 | `sdlc-secops` | Security review gate |
 
 The specification these are generated from lives at [`prompts/sdlc.md`](./prompts/sdlc.md).

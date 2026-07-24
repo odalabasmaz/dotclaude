@@ -137,8 +137,8 @@ phase invokes its owner persona, collects the handoff, updates `STATE.md`, and c
    pros/cons/cost, ADRs → `plan-vN.md` + `docs/adr/*`. On security/data-sensitive designs it
    **shifts left**, consulting SecOps (threat model) and Reviewer (testability) here. **Gate:** user
    approves the plan.
-4. **Dev** (`sdlc-developer`). Implement to the approved plan; tests (≥90% on critical logic); docs
-   → code + `dev-vN.md`. **Gate:** build + tests + coverage pass locally.
+4. **Dev** (`sdlc-developer`). Implement to the approved plan; tests per effort (≥90% on critical
+   logic at high); durable `README.md`/`SPEC.md` + `dev-vN.md`. **Gate:** build + tests pass locally.
 5. **Review** (`sdlc-reviewer` + `sdlc-secops`, in parallel). Findings tagged by severity go back to
    the Developer. **Bounded loop: at most 3 Dev↔Review rounds**, then escalate. **Gate:** Definition
    of Done — build green, coverage met, zero open blocker/major findings, docs updated, acceptance
