@@ -153,7 +153,7 @@ default and moves on.
 | `sdlc-product-manager` | Product Manager | Scope, requirements, acceptance criteria → `analyze-vN.md` |
 | `sdlc-architect` | Architect | Tech stack, architecture, ADRs → `plan-vN.md` + `adr/` |
 | `sdlc-developer` | Developer | Implementation, tests, docs → code + `dev-vN.md` |
-| `sdlc-reviewer` | Reviewer | Quality/correctness/perf gate → `review-vN.md` |
+| `sdlc-reviewer` | Reviewer (+ QA) | Quality/correctness/perf gate **and QA** — runs the tests, builds an edge-case matrix → `review-vN.md` |
 | `sdlc-secops` | SecOps | Security review gate → `security-vN.md` |
 
 ## Install

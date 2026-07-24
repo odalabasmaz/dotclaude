@@ -112,9 +112,11 @@ Each phase: invoke the owner persona, collect the handoff, update `STATE.md`, ru
    here. **Gate:** user approves the plan.
 3. **Dev** — `sdlc-developer`. Implement to the approved plan; tests (≥90% on critical logic);
    docs → code + `dev-vN.md`. **Gate:** build + tests + coverage pass locally.
-4. **Review** — `sdlc-reviewer` + `sdlc-secops` **in parallel**. Findings tagged by severity go
-   back to `sdlc-developer`. **Bounded loop: at most 3 Dev↔Review rounds** — if blockers remain,
-   **escalate** with the open findings and options. **Gate:** Definition of Done (below).
+4. **Review** — `sdlc-reviewer` + `sdlc-secops` **in parallel**. The Reviewer also **owns QA**
+   (no separate QA persona): it runs the tests/coverage itself and builds an edge-case matrix over
+   the critical functionality. Findings tagged by severity go back to `sdlc-developer`. **Bounded
+   loop: at most 3 Dev↔Review rounds** — if blockers remain, **escalate** with the open findings
+   and options. **Gate:** Definition of Done (below).
 5. **Monitor** — verify output against goals/acceptance criteria. New requirements loop back into
    **Analyze** — revise artifacts and product, don't restart.
 

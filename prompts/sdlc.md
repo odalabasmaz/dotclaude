@@ -34,7 +34,7 @@ escalation. Subagents do the domain thinking and return a structured result (see
 | `sdlc-product-manager` | Product Manager | Requirements, scope, problem statement, acceptance criteria → `analyze-vN.md` |
 | `sdlc-architect` | Architect | Tech stack, system design, trade-offs, cost/resource limits → `plan-vN.md` + ADRs |
 | `sdlc-developer` | Developer | Implementation, tests (≥90% on critical logic), dev docs → `dev-vN.md` + code |
-| `sdlc-reviewer` | Reviewer | Quality/correctness/performance/edge-case gate → `review-vN.md` |
+| `sdlc-reviewer` | Reviewer (+ QA) | Quality/correctness/performance gate **and QA** (test-plan review, edge-case matrix) → `review-vN.md` |
 | `sdlc-secops` | SecOps | Security review — vulns, authz gaps, secret handling → `security-vN.md` |
 
 ### 2.1 Orchestration mechanics
@@ -114,9 +114,12 @@ historical analogues; respects cost limits.
 Implements to spec, keeps it simple but effective, writes tests to **≥90% coverage on critical
 business logic**, and produces developer documentation.
 
-**Reviewer** — The skeptical gate before "go live". Verifies the product solves the *right*
-problem the *right* way: correctness, edge cases, performance, validation, observability, and
-test coverage. Classifies findings by severity (§10) and pushes for the optimal solution.
+**Reviewer** — The skeptical gate before "go live", and the owner of the **QA hat** (there is no
+separate QA persona). Verifies the product solves the *right* problem the *right* way: correctness,
+edge cases, performance, validation, observability, and test coverage. As QA, it doesn't just read
+the tests — it runs them, builds an **edge-case matrix** over the critical functionality (each case
+tested / not tested / consciously deferred), and cross-checks every acceptance criterion against a
+test. Classifies findings by severity (§10) and pushes for the optimal solution.
 
 **SecOps** — Reviews strictly through a security lens: injection, XSS, auth/authz gaps, secret
 leakage in logs, insecure defaults, dependency risk. Classifies findings by severity.
@@ -304,7 +307,10 @@ deferred with a logged follow-up).
 **Concurrency** — race conditions? duplicate creates? optimistic locking? idempotency?
 **Security** — SQL injection? XSS? secrets logged? auth bypass? dependency/supply-chain risk?
 **Maintainability** — readable? names clear? is the code testable?
-**Testing** — critical business logic covered? ≥90% coverage on it? edge cases tested?
+**Testing (QA)** — critical business logic covered? ≥90% coverage on it (at `high`)? Build the
+edge-case matrix — every boundary/error/concurrency case tested, deferred, or a finding — and run
+the suite + coverage yourself rather than trusting the reported status. Every acceptance criterion
+maps to a test.
 
 ---
 
