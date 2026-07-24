@@ -9,7 +9,11 @@ dotclaude/
 ├── skills/          # Claude Code skills (~/.claude/skills/)
 │   ├── job-evaluator/
 │   │   └── SKILL.md
-│   └── sdlc/
+│   ├── mcp-builder/
+│   │   └── SKILL.md
+│   ├── sdlc/
+│   │   └── SKILL.md
+│   └── storm-analyzer/
 │       └── SKILL.md
 ├── agents/          # Claude Code subagents (~/.claude/agents/)
 │   └── sdlc-*.md
@@ -24,7 +28,9 @@ Skills are modular instruction packages for [Claude Code](https://docs.anthropic
 | Skill | Description | Language |
 |-------|-------------|----------|
 | [job-evaluator](./skills/job-evaluator/) | Evaluates companies against a personal career profile using Glassdoor, Kununu, Levels.fyi, Comprehensive.io, LinkedIn, Xing, Indeed.de, Monster.de, Remotely.de, Layoffs.fyi | 🇬🇧 English |
+| [mcp-builder](./skills/mcp-builder/) | Scaffolds and implements TypeScript MCP servers — shared repo layout, tool-surface design, idempotency/conflict gating, tool annotations, resilience/cost guardrails, and mandatory automated-test + smoke-test verification. Can delegate implementation/review to the `sdlc-*` subagents. | 🇬🇧 English |
 | [sdlc](./skills/sdlc/) | Runs a full software development lifecycle (Analyze → Plan → Dev → Monitor) as a six-persona software company; orchestrates the `sdlc-*` subagents. Stack-agnostic. | 🇬🇧 English |
+| [storm-analyzer](./skills/storm-analyzer/) | Turns any topic into a structured, STORM-style analysis by simulating five expert perspectives, mapping contradictions, and synthesizing an executive-ready briefing with a role-tailored peer review. | 🇬🇧 English |
 
 ## Agents
 
@@ -94,6 +100,9 @@ Some skills require external tools or API keys. See each skill's README for deta
 | Skill | Requires |
 |-------|----------|
 | job-evaluator | Tavily MCP for web search (see [setup guide](./docs/tavily-mcp-setup.md)) |
+| mcp-builder | Node.js (v22+ recommended), `@modelcontextprotocol/sdk` + `zod` + `tsx`/`typescript`/`vitest` (scaffolded automatically); TypeScript only |
+| sdlc | The `sdlc-*` subagents installed (see [Agents](#agents) below) |
+| storm-analyzer | None — self-contained prompt template |
 
 ## Adding a New Skill
 
