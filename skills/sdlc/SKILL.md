@@ -83,6 +83,23 @@ Route on `STATUS`: `ok` → advance; `needs-user-decision` → run a decision ga
    effort keep this minimal — a one-line STATE and inline notes are enough; don't manufacture a
    full artifact trail.
 
+## Respect the existing repo — explore before you generate
+
+When the work lands in a repo that already has code, **understand it before writing anything, at
+every effort level.** Read representative existing modules to learn how *this* codebase is built:
+
+- language(s), build tooling, and how modules/services/components are laid out;
+- naming conventions (files, types, functions, tests);
+- the established error/response shape and logging format;
+- the test framework and test style already in use;
+- how a *similar* existing thing is structured — mirror it.
+
+**Conform to what's there; don't invent a new pattern when an established one exists.** Introduce a
+new pattern only with an explicit reason, and surface it as a decision at the Plan gate rather than
+slipping it in. Pass the conventions you found to the Architect and Developer so they build with the
+grain of the repo, and have the Reviewer check conformance. On a greenfield repo there's nothing to
+match — pick sensible defaults for the chosen stack instead.
+
 ## Phases
 
 Each phase: invoke the owner persona, collect the handoff, update `STATE.md`, run the gate.

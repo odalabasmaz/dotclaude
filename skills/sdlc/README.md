@@ -27,7 +27,9 @@ Say *"low effort"*, *"quick"*, or *"the works / production-grade"* to pick; high
 (auth, payments, data loss) prompts a recommendation to bump up regardless.
 
 It is **stack-agnostic** — it builds backend, frontend, CLI, service, or library projects in any
-language (Java/Kotlin, Python, Go, TypeScript, …). The Architect picks the tech per problem.
+language (Java/Kotlin, Python, Go, TypeScript, …). The Architect picks the tech per problem. In a
+repo that already has code, the team **explores the existing patterns first** (layout, naming,
+error format, test style) and builds with the grain rather than inventing a new pattern.
 
 ## Architecture
 

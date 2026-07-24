@@ -48,7 +48,9 @@ if everything looks fine:
 
 1. **Find or scaffold the repo** — detects the shared-repo layout (one root
    `package.json`/`tsconfig.json`, servers under `src/<name>/`, one build) or
-   creates it if this is the first server.
+   creates it if this is the first server. When servers already exist, it
+   **explores a sibling server first and mirrors its conventions** (helper
+   shape, error format, logging, test style) instead of inventing a new one.
 2. **Gather requirements and confirm scope** — one batch of clarifying
    questions covering the actual goal, read-only vs mutating, what backs it
    (keyless public API / API-key / OAuth), and whether the request implies

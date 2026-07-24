@@ -78,9 +78,15 @@ This skill assumes a **shared multi-server repo**: one root `package.json` +
 
 1. Look for this layout in the current working directory (root `package.json`
    with `@modelcontextprotocol/sdk` as a dependency, a `src/` with sibling
-   server folders). If found, **match its existing conventions exactly**
-   (indentation, error-handling style, whether it uses `registerTool` vs the
-   older `tool()` API, etc.) rather than the template below verbatim.
+   server folders). If found, **explore an existing sibling server before
+   writing anything and match its conventions exactly** rather than the
+   template below verbatim — read one representative `src/<other>/server.ts`
+   (and its `.test.ts` + README) and mirror its indentation, error-handling
+   style, `toolText`/`toolError` helper shape, logging format, test style, and
+   whether it uses `registerTool` vs the older `tool()` API. **Don't invent a
+   new pattern when the repo already has one.** This exploration happens at
+   every effort level — it's how the new server reads as part of the repo, not
+   a transplant.
 2. If nothing exists yet, scaffold the shared skeleton first:
    - `package.json`: `"type": "module"`, deps `@modelcontextprotocol/sdk` +
      `zod`, devDeps `@types/node` + `tsx` + `typescript` + `vitest`, plus a

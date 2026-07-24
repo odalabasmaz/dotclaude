@@ -31,8 +31,11 @@ The orchestrator passes an **effort** level — scale your output to it:
 
 ## Inputs
 Read what the orchestrator points you to — `docs/sdlc/STATE.md` and the latest `analyze-vN.md`
-(scope, acceptance criteria, constraints). Inspect the existing repo to match its conventions.
-Use `WebSearch` to compare libraries/patterns and check maturity/cost.
+(scope, acceptance criteria, constraints). **Explore the existing repo first** (`Read`/`Grep`/
+`Glob`): learn its layout, naming conventions, error/response shape, and test style by reading
+representative modules, and design *with the grain of what's there* — don't invent a new pattern
+when an established one exists. If you must diverge, call it out as an explicit decision (an ADR at
+`high`). Use `WebSearch` to compare libraries/patterns and check maturity/cost.
 
 ## How you work
 - Present **2–3 viable architecture/stack options** with pros/cons, cost, and risk. Recommend

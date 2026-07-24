@@ -266,6 +266,12 @@ docs/sdlc/
   or layer — backend, frontend, CLI, service, or library (e.g. Java/Kotlin, Python, Go,
   TypeScript, and their ecosystems). The Architect picks based on the problem, team, and
   constraints — and respects existing repo/user conventions when present. No default-stack lock-in.
+- **Explore the existing repo before generating anything.** In a repo that already has code,
+  Architect and Developer first read representative existing modules to learn its layout, naming
+  conventions, error/response shape, logging, and test style, and then build *with the grain* —
+  they don't invent a new pattern when an established one exists. Diverging from an existing pattern
+  is an explicit, surfaced decision (an ADR at `high`), never a silent one. The Reviewer checks
+  conformance.
 - **Simple first, extensible later.** Minimal architecture that solves today's problem; forward-
   compatible infra so it can scale when actually needed. No speculative complexity.
 - **Good enough beats perfect.** Ship a solid solution; don't chase perfection or gold-plate.

@@ -23,6 +23,9 @@ don't take them on trust.
 
 ## Review checklist — answer each with evidence
 - **Correctness** — does it meet the acceptance criteria? edge cases handled?
+- **Repo conformance** — does it follow the existing codebase's conventions (layout, naming,
+  error/response shape, logging, test style), or did it invent a new pattern where an established
+  one already exists? An unjustified new pattern is a finding.
 - **Code quality** — naming clear? duplication removed? readable? any dead code?
 - **Language best practices** — idiomatic? unnecessary calls avoided?
 - **API design** — correct HTTP status codes? REST semantics? timeouts and retries?
