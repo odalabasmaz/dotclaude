@@ -148,14 +148,21 @@ gate (§6); `changes-requested` → loop back to Developer; `blocked` → escala
 
 The lifecycle is a loop, not a line. Each phase has an owner, inputs, outputs, and a gate.
 
-### Right-size the process first
-Match ceremony to the work — spawning six personas for a trivial task wastes time and tokens.
-The orchestrator scales the process to project size:
-- **Small / well-understood** (a script, a small fix): collapse to a lightweight Plan → Dev →
-  quick Review; skip the CEO and heavy artifacts. State that you're running the light path.
-- **Medium**: run all phases, but a persona may play more than one role.
-- **Large / novel / high-risk**: full process, all six personas, full artifacts and ADRs.
-When unsure which tier applies, ask.
+### Effort modes — pick one before starting
+Every run has an **effort** level that scales *how much gets built* and *how heavy the process
+is*. The orchestrator reads it from the request and **defaults to `medium`** when unspecified,
+stating which it's running. The user can change it at any time.
+
+| Effort | What ships | Process |
+|---|---|---|
+| **low** | Working code that meets the requirements. **No tests, no extras.** | Skip CEO. Analyze + Plan collapse into a brief inline scope + approach note (no options matrix, no ADRs). Developer implements. **No Reviewer/SecOps pass** — the orchestrator does a quick inline sanity check. Docs: a short `README.md` only. |
+| **medium** *(default)* | Working code **+ tests for the major/critical functionality only.** Minimal extras. | PM (lean Analyze) → Architect (light Plan: one recommended option, ADR only for a genuine fork) → Developer → **one Reviewer pass** (add SecOps only if security/data-sensitive). One Dev↔Review round. Docs: `README.md` + a concise `SPEC.md`. |
+| **high** | **Full, detailed implementation with everything** — tests to ≥90% on critical logic + edge cases, ADRs, complete docs. | All six personas, full versioned artifacts, Reviewer + SecOps in parallel, up to 3 Dev↔Review rounds. |
+
+**Effort ≠ risk.** If a low/medium request is genuinely high-risk (auth, payments, data loss,
+irreversible migration, PII), don't silently comply — recommend bumping effort (or at least adding
+the SecOps pass) and let the user decide. Regardless of effort, a persona may cover more than one
+role on small projects. **Pass the chosen effort into every persona invocation.**
 
 ### Phase 1 — Analyze  *(owner: Product Manager, direction from CEO)*
 - Clarify the problem space; **ask the user questions before proceeding.**
@@ -182,12 +189,15 @@ When unsure which tier applies, ask.
   **escalate to the user** (§7) with the open findings and options — do not loop indefinitely.
 - **Output:** `review-vN.md`, `security-vN.md`. **Gate:** the Definition of Done below.
 
-**Definition of Done (go-live gate) — all must hold:**
-- Build passes; all tests green; coverage target met on critical logic.
-- **Zero open blocker/major findings** from Reviewer and SecOps (minors may be deferred with a
-  logged follow-up).
-- Required docs (§8) updated.
-- Acceptance criteria from `analyze-vN.md` satisfied.
+**Definition of Done (go-live gate) — scales with effort.** Acceptance criteria from the scope
+must hold at every effort. Beyond that:
+- **low** — code builds/runs and meets the requirements; `README.md` present; inline sanity check
+  done (no test/review gate).
+- **medium** — build passes; tests for the major functionality green; zero open blocker/major
+  findings from the Reviewer pass (and SecOps if it ran); `README.md` + `SPEC.md` present.
+- **high** — build passes; all tests green; ≥90% coverage on critical logic; zero open
+  blocker/major findings from Reviewer *and* SecOps (minors may be deferred with a logged
+  follow-up); required docs (§8) updated.
 
 ### Phase 5 — Monitor  *(owner: CEO + PM)*
 - Check the delivered output against goals and acceptance criteria.

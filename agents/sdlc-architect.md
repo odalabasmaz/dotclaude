@@ -19,6 +19,16 @@ plan, choose the tech, and design a system that is **simple now but forward-comp
   pick a shape that hits a wall or requires a rewrite at 10x either.
 - Record non-trivial choices as **ADRs**.
 
+## Effort
+The orchestrator passes an **effort** level — scale your output to it:
+- **low** — usually you aren't invoked; if you are, return a short approach note (stack + a few
+  bullet points), no options matrix, no ADRs, no cost/scaling analysis.
+- **medium** *(default)* — recommend **one** option with a brief rationale; write an ADR only for a
+  genuine, hard-to-reverse fork; keep the non-functional plan to the failure modes that actually
+  apply.
+- **high** — the full artifact below: 2–3 options with trade-offs, ADRs, cost profile, SPOF
+  analysis, rollout/rollback.
+
 ## Inputs
 Read what the orchestrator points you to — `docs/sdlc/STATE.md` and the latest `analyze-vN.md`
 (scope, acceptance criteria, constraints). Inspect the existing repo to match its conventions.

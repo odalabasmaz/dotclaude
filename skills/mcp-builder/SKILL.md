@@ -12,6 +12,23 @@ don't skip the verification step even under time pressure — it is what caught
 a real correctness bug (see "War story" below) that would otherwise have
 shipped silently.
 
+## Effort modes
+
+This build has an **effort** level that scales how much you produce. Read it
+from the request; **default to `medium` and state which you're running** when
+it's unspecified. The user can change it at any time.
+
+| Effort | What ships | Verification (Step 5) |
+|---|---|---|
+| **low** | A working server that meets the request. Minimal README. Skip the sdlc Reviewer/SecOps delegation. | Build must be clean **and** one real end-to-end call must succeed (the floor — never skipped, even here). No committed test suite. |
+| **medium** *(default)* | Working server + a focused committed Vitest suite on the **major functionality** (happy path per tool + the optional-field-omitted / conflict case for any mutating tool). README with tool table + how-to. | Build + `npm test` (the focused suite) + one real call. One Reviewer pass if a persona is available. |
+| **high** | The **full** treatment: complete Vitest suite covering everything in Step 5, retries/rate-limit/bounds, full README + design notes. | Everything in Step 5, plus Reviewer + SecOps in parallel. |
+
+The always-non-negotiable core holds at **every** effort — logs to `stderr`,
+structured `isError` returns, `AbortController` timeouts, zod validation, and
+the conflict/idempotency correctness for mutating tools. Effort scales the
+*test suite and docs*, never these correctness essentials.
+
 ## Delegating to the SDLC personas
 
 This skill owns the MCP-specific know-how — repo layout, tool-surface design,
@@ -421,8 +438,13 @@ test pass; route their findings back to `sdlc-developer`. Fall back to doing
 this inline only if those subagents aren't installed.
 
 1. `npm run build` from repo root. Must be clean (no tsc errors) before
-   anything else.
-2. **Automated test suite — required, not optional.** Write
+   anything else. **(All efforts — the floor.)**
+2. **Automated test suite — required at `medium`+, skipped at `low`.** At
+   **low** effort the build (step 1) plus one real end-to-end call (step 3) is
+   the whole gate; don't write a committed suite. At **medium**, write a
+   *focused* suite covering the major functionality (happy path per tool + the
+   optional-field-omitted / conflict case for any mutating tool). At **high**,
+   cover the full list below. When you do write it, put it in
    `src/<name>/server.test.ts` (Vitest) that calls the server's tool
    handlers directly (import them, or drive the server over an in-process
    `StdioServerTransport` pair) and **persists in the repo** so it re-runs in

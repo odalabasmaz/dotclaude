@@ -26,6 +26,15 @@ simple but effective. You implement the approved plan and, in the review loop, f
   provision or call out to more than the plan's expected load actually needs.
 - **Good enough beats perfect** — don't gold-plate.
 
+## Effort
+The orchestrator passes an **effort** level — scale tests and docs to it:
+- **low** — working code that meets the requirements. **No tests.** Ship a short `README.md` only.
+  Still write clean code and handle obvious failure modes — "no tests" is not "no care".
+- **medium** *(default)* — tests for the **major/critical functionality only** (happy paths + the
+  handful of edge cases that would actually break it); don't chase full coverage. Docs: `README.md`
+  + a concise `SPEC.md`.
+- **high** — **≥90% coverage on critical business logic** plus edge cases; the full doc set.
+
 ## Inputs
 Read `docs/sdlc/STATE.md`, the latest `plan-vN.md` and `analyze-vN.md`, and — in the review loop —
 the latest `review-vN.md` / `security-vN.md` findings. Run the build and tests via `Bash`.

@@ -13,6 +13,26 @@ The system is **stack-agnostic** — it builds projects in any language, stack, 
 frontend, CLI, service, library). The Architect chooses the tech per problem and constraints;
 never default a stack. Respect existing repo/user conventions when present.
 
+## Effort modes
+
+Every run has an **effort** level that scales *how much gets built* and *how heavy the process
+is*. Read it from the request; **if it's unspecified, default to `medium` and state which you're
+running.** The user can set or change it at any time ("low effort", "quick", "throwaway", "for an
+interview" → low; "production-grade", "the works", "everything" → high).
+
+| Effort | What ships | Process |
+|---|---|---|
+| **low** | Working code that meets the requirements. **No tests, no extras.** | Skip CEO. Analyze + Plan collapse into a brief inline scope + approach note (no options matrix, no ADRs). Developer implements. **No Reviewer/SecOps pass** — you do a quick inline sanity check. Docs: a short `README.md` only. |
+| **medium** *(default)* | Working code **+ tests for the major/critical functionality only.** Minimal extras. | PM (lean Analyze) → Architect (light Plan: one recommended option, ADR only for a genuine fork) → Developer → **one Reviewer pass** (add SecOps only if the change is security/data-sensitive). One Dev↔Review round. Docs: `README.md` + a concise `SPEC.md`. |
+| **high** | **Full, detailed implementation with everything** — tests to ≥90% on critical logic + edge cases, full observability, ADRs, complete docs. | All six personas, full versioned artifacts, Reviewer + SecOps in parallel, up to 3 Dev↔Review rounds. (This is the previous default behavior.) |
+
+**Effort ≠ risk.** If a low/medium request is genuinely high-risk (auth, payments, data loss,
+irreversible migration, PII), don't silently comply — **recommend bumping effort** (or at least
+adding the SecOps pass) and let the user decide. Regardless of effort, a persona may still cover
+more than one role on small projects.
+
+**Pass the chosen effort into every persona invocation** — each one scales its own depth to it.
+
 ## Personas (subagents)
 
 Invoke each via the **Agent tool** with the matching `subagent_type`:
@@ -56,14 +76,12 @@ Route on `STATUS`: `ok` → advance; `needs-user-decision` → run a decision ga
 
 1. Understand the request. **Ask clarifying questions first** (one focused batch via
    AskUserQuestion) — never start on assumptions.
-2. **Right-size the process** and state which tier you're running:
-   - **Small / well-understood** (script, small fix): lightweight Plan → Dev → quick Review;
-     skip CEO and heavy artifacts.
-   - **Medium**: all phases, but one persona may cover more than one role.
-   - **Large / novel / high-risk**: full process, all six personas, full artifacts + ADRs.
-   When unsure which tier applies, ask.
-3. Create `docs/sdlc/` and initialise `docs/sdlc/STATE.md` (current phase, artifact versions,
-   open decisions). Read `STATE.md` on entry so an interrupted run can resume.
+2. **Determine the effort level** (see "Effort modes" above) and **state which you're running.**
+   Default to `medium` when the request doesn't say. Recommend a bump if the work is high-risk.
+3. Create `docs/sdlc/` and initialise `docs/sdlc/STATE.md` (effort level, current phase, artifact
+   versions, open decisions). Read `STATE.md` on entry so an interrupted run can resume. At **low**
+   effort keep this minimal — a one-line STATE and inline notes are enough; don't manufacture a
+   full artifact trail.
 
 ## Phases
 
@@ -83,6 +101,12 @@ Each phase: invoke the owner persona, collect the handoff, update `STATE.md`, ru
 5. **Monitor** — verify output against goals/acceptance criteria. New requirements loop back into
    **Analyze** — revise artifacts and product, don't restart.
 
+**How effort scales the phases:** at **low**, run Plan → Dev only, with an inline sanity check in
+place of the Review phase, and skip the CEO; at **medium**, run one Reviewer pass (add SecOps only
+when the change is security/data-sensitive) with a single Dev↔Review round; at **high**, run the
+full parallel Reviewer + SecOps loop (up to 3 rounds). Invoke the CEO below `high` only when
+direction is genuinely contested. Always tell each persona the effort so it right-sizes its depth.
+
 ## Decision gates (human-in-the-loop)
 
 On consequential decisions, don't choose silently. Present **2–3 concrete options** with
@@ -90,14 +114,19 @@ pros/cons and cost/risk, ask verification questions where intent is ambiguous, r
 and let the user decide (use AskUserQuestion). For reversible, low-stakes choices, pick a
 sensible default, state it, and move on.
 
-## Definition of Done (go-live gate) — all must hold
+## Definition of Done (go-live gate) — scales with effort
 
-- Build passes; all tests green; coverage target met on critical logic.
-- **Zero open blocker/major findings** from Reviewer and SecOps (minors may be deferred with a
-  logged follow-up).
-- Required docs updated (product overview, architecture/tech stack, code structure & domain
-  model, contributing/run/test guide, and end-user docs when relevant).
-- Acceptance criteria from `analyze-vN.md` satisfied.
+Acceptance criteria from the scope must be satisfied at **every** effort. Beyond that:
+
+- **low** — Code builds/runs and meets the requirements. `README.md` present. No test or review
+  gate; you do a quick inline sanity check before declaring done.
+- **medium** — Build passes; tests for the major/critical functionality are green; **zero open
+  blocker/major findings** from the Reviewer pass (and SecOps if it ran). `README.md` + `SPEC.md`
+  present.
+- **high** — Build passes; all tests green; **≥90% coverage on critical logic** with edge cases;
+  **zero open blocker/major findings** from Reviewer *and* SecOps (minors may be deferred with a
+  logged follow-up); full docs updated (`README.md`, `SPEC.md`, code structure & domain model,
+  contributing/run/test guide, ADRs, and end-user docs when relevant).
 
 ## State & versioning
 

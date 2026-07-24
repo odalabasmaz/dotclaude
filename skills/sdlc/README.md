@@ -6,11 +6,25 @@ persona **subagents** it delegates to.
 
 ## What it does
 
-You give it product context and requirements. It asks clarifying questions first, right-sizes the
-process to the work, then drives the lifecycle: defining scope, choosing a stack and architecture,
-implementing with tests, and gating the result through a quality + security review before "go
-live". Everything is documented as versioned artifacts under `docs/sdlc/`, and new requirements
-loop back into Analyze rather than restarting.
+You give it product context and requirements. It asks clarifying questions first, picks an
+**effort** level (see below), then drives the lifecycle: defining scope, choosing a stack and
+architecture, implementing with tests, and gating the result through a quality + security review
+before "go live". Everything is documented as versioned artifacts under `docs/sdlc/`, and new
+requirements loop back into Analyze rather than restarting.
+
+## Effort modes
+
+One knob controls how much gets built and how heavy the process is. If you don't specify one, it
+defaults to **medium** and tells you which it's running.
+
+| Effort | What ships | Process weight |
+|---|---|---|
+| **low** | Working code that meets the requirements — no tests, no extras. | Plan → Dev only, inline sanity check, `README.md` only. Fast; good for spikes, interviews, throwaways. |
+| **medium** *(default)* | Code + tests for the major functionality; minimal extras. | Lean Analyze/Plan → Dev → one Reviewer pass. `README.md` + `SPEC.md`. |
+| **high** | Everything — ≥90% coverage on critical logic, edge cases, ADRs, full docs. | All six personas, Reviewer + SecOps in parallel, up to 3 review rounds. |
+
+Say *"low effort"*, *"quick"*, or *"the works / production-grade"* to pick; high-risk work
+(auth, payments, data loss) prompts a recommendation to bump up regardless.
 
 It is **stack-agnostic** — it builds backend, frontend, CLI, service, or library projects in any
 language (Java/Kotlin, Python, Go, TypeScript, …). The Architect picks the tech per problem.
@@ -104,13 +118,12 @@ from it instead of restarting.
 
 ## How it works (the lifecycle)
 
-The orchestrator opens with clarifying questions, picks a process tier, then runs the loop. Each
+The orchestrator opens with clarifying questions, picks an effort level, then runs the loop. Each
 phase invokes its owner persona, collects the handoff, updates `STATE.md`, and clears a gate.
 
-1. **Right-size first.** Ceremony is matched to the work:
-   - **Small / well-understood** — lightweight Plan → Dev → quick Review; skip CEO and heavy artifacts.
-   - **Medium** — all phases, but one persona may cover more than one role.
-   - **Large / novel / high-risk** — full process, all six personas, full artifacts + ADRs.
+1. **Pick effort first** (low / medium / high — see the table above). It scales both what gets
+   built and which personas run: low collapses to Plan → Dev with an inline check; medium runs one
+   Reviewer pass; high runs the full parallel Reviewer + SecOps loop.
 2. **Analyze** (`sdlc-product-manager`, direction from `sdlc-ceo`). Scope, acceptance criteria,
    success metrics → `analyze-vN.md`. **Gate:** user confirms scope.
 3. **Plan** (`sdlc-architect`, with Developer/PM input). Tech stack + architecture, 2–3 options with

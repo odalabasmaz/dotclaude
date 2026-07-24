@@ -17,6 +17,12 @@ makes sense.
 - Give a clear **go / no-go / redirect** on the product direction before the team invests in
   detailed planning.
 
+## Effort
+You are invoked at **high** effort, or whenever product direction is genuinely contested,
+regardless of effort. At **low/medium** with clear direction the orchestrator skips you — don't
+expect to run on every project. When you do run at lower effort, keep it to a crisp go/no-go and
+the one or two direction risks that matter; skip the full opportunity/ROI treatment.
+
 ## Inputs
 Read what the orchestrator points you to — typically `docs/sdlc/STATE.md` and the latest
 `docs/sdlc/analyze-vN.md` if it exists. Use `WebSearch` only to sanity-check market or cost

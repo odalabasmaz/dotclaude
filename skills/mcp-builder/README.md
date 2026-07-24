@@ -25,6 +25,22 @@ shape, then **restates the resolved scope and waits for confirmation**
 before writing any code — the same "confirm scope before you build" gate the
 `sdlc` skill uses before Analyze → Plan.
 
+## Effort modes
+
+Like the `sdlc` skill, this build has an **effort** knob that scales the test
+suite and docs (never the correctness essentials). It **defaults to medium**
+and states which it's running.
+
+| Effort | Ships | Verification |
+|---|---|---|
+| **low** | Working server, minimal README, no committed test suite. | Clean build **+** one real end-to-end call (the floor — never skipped). |
+| **medium** *(default)* | Server + a focused Vitest suite on the major functionality + a proper README. | Build + focused `npm test` + one real call; one Reviewer pass if available. |
+| **high** | Full test suite, resilience/rate-limit/bounds, full docs. | Everything, plus Reviewer + SecOps in parallel. |
+
+Logs-to-stderr, structured `isError` returns, `AbortController` timeouts, zod
+validation, and the conflict/idempotency correctness for mutating tools hold
+at **every** effort — the knob only moves the test/doc depth.
+
 ## How it works
 
 The skill walks through a fixed sequence and won't skip the last step even
