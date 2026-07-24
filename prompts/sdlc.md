@@ -254,12 +254,20 @@ docs/sdlc/
   artifact, and any open decisions. The orchestrator reads it on entry and updates it after each
   phase, so an interrupted run can be resumed.
 
-**Product/reference docs to generate as the product takes shape:**
-- Product description / overview
-- Architecture & tech stack
+**Durable product docs at the project root** (distinct from the versioned `docs/sdlc/` trail),
+produced by the Developer once the implementation works:
+- **`README.md`** *(always)* — what it is and the problem it solves, features, install/run,
+  how-tos/usage examples, configuration, known issues.
+- **`SPEC.md`** *(medium+)* — the technical spec: architecture, components & responsibilities, data
+  model/domain, key flows, interfaces/APIs, key design decisions (link ADRs), failure modes and
+  operational notes, testing approach.
+
+At **high**, also generate the fuller set as the product takes shape:
 - Code structure & domain model
 - Contributing guide + how to run + how to test (state *what* is tested)
 - End-user docs when relevant: API usage, how to operate the system, known issues
+
+If the repo already has a docs convention, follow it rather than imposing this structure.
 
 ---
 

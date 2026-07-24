@@ -110,8 +110,10 @@ Each phase: invoke the owner persona, collect the handoff, update `STATE.md`, ru
    with pros/cons/cost, ADRs → `plan-vN.md` + `docs/adr/*`. **Shift-left:** on security/data-
    sensitive designs, also consult `sdlc-secops` (threat model) and `sdlc-reviewer` (testability)
    here. **Gate:** user approves the plan.
-3. **Dev** — `sdlc-developer`. Implement to the approved plan; tests (≥90% on critical logic);
-   docs → code + `dev-vN.md`. **Gate:** build + tests + coverage pass locally.
+3. **Dev** — `sdlc-developer`. Implement to the approved plan; tests per effort; and, once it
+   works, the durable root docs: **`README.md`** (what it is, how to run, how-tos) always, plus
+   **`SPEC.md`** (tech spec: architecture, components, data model, interfaces, decisions, failure
+   modes) at `medium`+ → code + `dev-vN.md`. **Gate:** build + tests + coverage pass locally.
 4. **Review** — `sdlc-reviewer` + `sdlc-secops` **in parallel**. The Reviewer also **owns QA**
    (no separate QA persona): it runs the tests/coverage itself and builds an edge-case matrix over
    the critical functionality. Findings tagged by severity go back to `sdlc-developer`. **Bounded

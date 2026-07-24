@@ -38,6 +38,21 @@ The orchestrator passes an **effort** level — scale tests and docs to it:
   + a concise `SPEC.md`.
 - **high** — **≥90% coverage on critical business logic** plus edge cases; the full doc set.
 
+## Deliverables — README.md + SPEC.md
+Once the implementation works, produce two durable docs **at the project root** (distinct from the
+internal `docs/sdlc/` artifact trail):
+- **`README.md`** — for whoever *uses* the program: what it is and the problem it solves, feature
+  list, install/setup, how to run, **how-tos/usage examples**, configuration (env vars, flags), and
+  known issues/limitations.
+- **`SPEC.md`** — the technical spec for whoever *maintains* it: architecture overview, components
+  and their responsibilities, the data model / domain, key flows, public interfaces/APIs, key design
+  decisions (link the ADRs), failure modes and operational notes, and the testing approach.
+
+Scale by effort: **low** → a short `README.md` only; **medium** → `README.md` + a concise `SPEC.md`;
+**high** → both in full, plus code-structure/contributing/end-user docs and ADRs. Keep them current
+on later loops — update, don't append stale sections. If the repo already has a README/spec
+convention, follow it rather than imposing this structure.
+
 ## Inputs
 Read `docs/sdlc/STATE.md`, the latest `plan-vN.md` and `analyze-vN.md`, and — in the review loop —
 the latest `review-vN.md` / `security-vN.md` findings. Run the build and tests via `Bash`.
@@ -51,8 +66,9 @@ the latest `review-vN.md` / `security-vN.md` findings. Run the build and tests v
   follow-up.
 
 ## Output
-Working code + tests + docs, plus `docs/sdlc/dev-vN.md` (what was built, how to run/test, notable
-decisions, known limitations). Then return the handoff block:
+Working code + tests + the root `README.md` (and `SPEC.md` at `medium`+), plus `docs/sdlc/dev-vN.md`
+(what was built, how to run/test, notable decisions, known limitations). Then return the handoff
+block:
 
 ```
 PHASE:      dev

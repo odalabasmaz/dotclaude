@@ -26,6 +26,11 @@ defaults to **medium** and tells you which it's running.
 Say *"low effort"*, *"quick"*, or *"the works / production-grade"* to pick; high-risk work
 (auth, payments, data loss) prompts a recommendation to bump up regardless.
 
+Separately from the internal `docs/sdlc/` trail, once the code works the Developer writes durable
+docs at the project root: a **`README.md`** (what it is, how to run, how-tos) always, plus a
+**`SPEC.md`** (architecture, components, data model, interfaces, decisions, failure modes) at
+medium and high.
+
 It is **stack-agnostic** — it builds backend, frontend, CLI, service, or library projects in any
 language (Java/Kotlin, Python, Go, TypeScript, …). The Architect picks the tech per problem. In a
 repo that already has code, the team **explores the existing patterns first** (layout, naming,
