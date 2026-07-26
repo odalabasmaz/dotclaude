@@ -20,7 +20,7 @@ it's unspecified. The user can change it at any time.
 
 | Effort | What ships | Verification (Step 5) |
 |---|---|---|
-| **low** | A working server that meets the request. Minimal README. Skip the sdlc Reviewer/SecOps delegation. | Build must be clean **and** one real end-to-end call must succeed (the floor — never skipped, even here). No committed test suite. |
+| **low** | A working server that meets the request. Minimal README. Skip the squad Reviewer/SecOps delegation. | Build must be clean **and** one real end-to-end call must succeed (the floor — never skipped, even here). No committed test suite. |
 | **medium** *(default)* | Working server + a focused committed Vitest suite on the **major functionality** (happy path per tool + the optional-field-omitted / conflict case for any mutating tool). README with tool table + how-to. | Build + `npm test` (the focused suite) + one real call. One Reviewer pass if a persona is available. |
 | **high** | The **full** treatment: complete Vitest suite covering everything in Step 5, retries/rate-limit/bounds, full README + design notes. | Everything in Step 5, plus Reviewer + SecOps in parallel. |
 
@@ -29,19 +29,19 @@ structured `isError` returns, `AbortController` timeouts, zod validation, and
 the conflict/idempotency correctness for mutating tools. Effort scales the
 *test suite and docs*, never these correctness essentials.
 
-## Delegating to the SDLC personas
+## Delegating to the squad personas
 
 This skill owns the MCP-specific know-how — repo layout, tool-surface design,
-conventions, docs, OAuth. It borrows three things from the `sdlc` skill via
+conventions, docs, OAuth. It borrows three things from the `squad` skill via
 the **Agent tool**/`AskUserQuestion` instead of reinventing them: the
 up-front requirements-questioning discipline (Step 1), implementation
 (Step 3), and review (Step 5) — so scope gets the same "confirm before you
 build" gate, and code gets the same discipline and checklists, as any other
-sdlc-built project. This is a lightweight borrow of the personas' habits and
-tools, not a full sdlc run — no `docs/sdlc/` artifact trail or `STATE.md` is
+squad-built project. This is a lightweight borrow of the personas' habits and
+tools, not a full squad run — no `docs/squad/` artifact trail or `STATE.md` is
 created.
 
-- **Gather requirements → `subagent_type: sdlc-product-manager` (optional,
+- **Gather requirements → `subagent_type: squad-product-manager` (optional,
   larger builds only).** For a single well-scoped server, do Step 1 inline —
   it's fast and the persona would add nothing. Delegate instead when the
   request spans multiple servers, a non-obvious domain, or several
@@ -49,25 +49,25 @@ created.
   whole job is scope + acceptance criteria; reuse it rather than
   re-improvising. Give it the raw user request and get back scope +
   acceptance criteria to feed Step 1's confirmation gate.
-- **Implement → `subagent_type: sdlc-developer`.** Give it: the target repo
+- **Implement → `subagent_type: squad-developer`.** Give it: the target repo
   path, the concrete tool surface decided in Steps 1–2 (names, schemas,
   read-only vs mutating), and a pointer to **this file** (`skills/mcp-builder/
   SKILL.md`) as the spec to follow for server shape, error handling, timeouts,
   and the conflict/idempotency pattern in Step 3. Do not hand it vague intent —
   hand it the resolved design.
-- **Verify → `sdlc-reviewer` + `sdlc-secops`, in parallel.** After the
+- **Verify → `squad-reviewer` + `squad-secops`, in parallel.** After the
   Developer reports back, spawn both in one message: Reviewer checks
   correctness against Step 5's test list (required-field-omitted, conflict
   path with the optional key genuinely omitted, force/override, idempotent
   retry); SecOps checks secrets/env-var handling, injection via tool inputs,
   and the timeout/DoS surface on external calls. Route findings back to
-  `sdlc-developer` to fix; bound this to 3 rounds same as sdlc, then escalate
+  `squad-developer` to fix; bound this to 3 rounds same as squad, then escalate
   to the user with the open findings.
 - Steps 0–2, 4, and 6 (scaffolding, scope, wiring, OAuth) stay owned by this
   skill and run inline — they're MCP-domain judgment calls, not implementation
   or QA work.
-- If the `sdlc-developer`/`sdlc-reviewer`/`sdlc-secops` subagents aren't
-  installed (see `skills/sdlc/README.md#install`), fall back to doing Steps 3
+- If the `squad-developer`/`squad-reviewer`/`squad-secops` subagents aren't
+  installed (see `skills/squad/README.md#install`), fall back to doing Steps 3
   and 5 inline as before — don't block on their availability.
 
 ## Step 0 — Find or create the shared repo
@@ -114,11 +114,11 @@ This skill assumes a **shared multi-server repo**: one root `package.json` +
 
 ## Step 1 — Gather requirements and confirm scope before writing code
 
-Borrow sdlc's kickoff discipline here: **ask clarifying questions in one
+Borrow squad's kickoff discipline here: **ask clarifying questions in one
 focused batch up front** (via `AskUserQuestion`) rather than guessing and
 building the wrong shape, and **don't start Step 2's design until scope is
 actually confirmed** — this is the same "gate before you invest" pattern
-sdlc uses before Analyze → Plan.
+squad uses before Analyze → Plan.
 
 1. **Ask, in one batch, whatever of these is not already clear from the
    request:**
@@ -142,8 +142,8 @@ sdlc uses before Analyze → Plan.
      flagging the rest needed separate backends, not stretching one tool's
      schema to imply coverage it doesn't have.)
    For a request that spans multiple servers or an unfamiliar domain, delegate
-   this gathering to `sdlc-product-manager` instead of improvising (see
-   "Delegating to the SDLC personas" above) and fold its scope/acceptance
+   this gathering to `squad-product-manager` instead of improvising (see
+   "Delegating to the squad personas" above) and fold its scope/acceptance
    criteria into the question batch or the confirmation below.
 2. **Naming**: name the package/directory after the **domain**, not a generic
    verb — `books`, not `search`; `weather`, not `data`. Tool names describe
@@ -152,7 +152,7 @@ sdlc uses before Analyze → Plan.
 3. **Confirm before proceeding.** Once scope is resolved, state back in 2–3
    sentences what you're about to build (server name, read-only/mutating,
    backend, the tools it will expose) and get explicit confirmation before
-   moving to Step 2 — same purpose as sdlc's "user confirms scope" gate.
+   moving to Step 2 — same purpose as squad's "user confirms scope" gate.
    Skip this restatement only when the request was already fully
    unambiguous (e.g. "add a read-only tool wrapping the free FooBar API's
    `/status` endpoint").
@@ -193,7 +193,7 @@ sdlc uses before Analyze → Plan.
 
 ## Step 3 — Implement the server
 
-**Delegate this step to `sdlc-developer`** (see "Delegating to the SDLC
+**Delegate this step to `squad-developer`** (see "Delegating to the squad
 personas" above) — give it the resolved tool surface from Steps 1–2 plus this
 section as the spec. Fall back to implementing inline only if that subagent
 isn't installed.
@@ -401,7 +401,7 @@ state — skip only for a genuinely trivial, low-volume read-only tool.
   to see high call volume, consider a soft usage cap via env var (e.g.
   `<NAME>_MAX_CALLS_PER_DAY`) that fails closed with a clear message once
   hit, rather than letting a runaway agent loop rack up an unbounded bill.
-  This is the same "affordable at scale" bar the `sdlc-architect` persona
+  This is the same "affordable at scale" bar the `squad-architect` persona
   applies to full systems — apply it here too, just lighter-weight.
 
 ## Step 4 — Wire up scripts and docs
@@ -438,9 +438,9 @@ optional field) don't require a bump.
 ## Step 5 — Build and verify (do not skip this)
 
 This is not optional polish — it is how real bugs get caught before a user
-does. **Delegate the review portion to `sdlc-reviewer` + `sdlc-secops` in
-parallel** (see "Delegating to the SDLC personas" above) once build + smoke
-test pass; route their findings back to `sdlc-developer`. Fall back to doing
+does. **Delegate the review portion to `squad-reviewer` + `squad-secops` in
+parallel** (see "Delegating to the squad personas" above) once build + smoke
+test pass; route their findings back to `squad-developer`. Fall back to doing
 this inline only if those subagents aren't installed.
 
 1. `npm run build` from repo root. Must be clean (no tsc errors) before

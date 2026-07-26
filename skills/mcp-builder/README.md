@@ -23,11 +23,11 @@ read-only vs mutating, what backs it, whether the upstream API actually
 covers everything you asked for) rather than guessing and building the wrong
 shape, then **restates the resolved scope and waits for confirmation**
 before writing any code — the same "confirm scope before you build" gate the
-`sdlc` skill uses before Analyze → Plan.
+`squad` skill uses before Analyze → Plan.
 
 ## Effort modes
 
-Like the `sdlc` skill, this build has an **effort** knob that scales the test
+Like the `squad` skill, this build has an **effort** knob that scales the test
 suite and docs (never the correctness essentials). It **defaults to medium**
 and states which it's running.
 
@@ -58,8 +58,8 @@ if everything looks fine:
    books/weather/countries" via a books-only API case this was built from) —
    then a short restatement of what's about to be built, confirmed before
    moving on. For multi-server or unfamiliar-domain requests, this can be
-   **delegated to the `sdlc-product-manager` subagent** instead of
-   improvising (see "SDLC integration" below).
+   **delegated to the `squad-product-manager` subagent** instead of
+   improvising (see "Squad integration" below).
 3. **Design the tool surface** — one responsibility per tool (composable,
    chainable), a prompt to chain them when there's a common workflow, trimmed
    API responses, passthrough pagination.
@@ -68,9 +68,9 @@ if everything looks fine:
    external calls, the conflict-detection + idempotency pattern for
    mutating tools (with the exact bug to avoid, verbatim), and the
    pluggable-backend pattern for servers that might later point at a real
-   integration. **Delegated to the `sdlc-developer` subagent** when it's
-   installed (see "SDLC integration" below), so implementation gets a fresh,
-   focused pass and the same coding discipline as any sdlc-built project.
+   integration. **Delegated to the `squad-developer` subagent** when it's
+   installed (see "Squad integration" below), so implementation gets a fresh,
+   focused pass and the same coding discipline as any squad-built project.
 5. **Wire up scripts and docs** — `package.json` bin/scripts, per-server
    README template, root README table + layout update.
 6. **Build and verify — never skipped** — `npm run build` plus a one-time
@@ -80,7 +80,7 @@ if everything looks fine:
    bug hid) and uses the MCP Inspector for interactive checks. Only reports done
    after this passes.
    Review of the result (correctness + security) is **delegated to
-   `sdlc-reviewer` and `sdlc-secops` in parallel** when installed.
+   `squad-reviewer` and `squad-secops` in parallel** when installed.
 7. **Optional OAuth setup** — for servers that need to authenticate against
    a real user account (e.g. a real calendar), a one-time local
    refresh-token helper script, not interactive auth inside the server
@@ -98,27 +98,27 @@ if everything looks fine:
   covered — this skill only encodes patterns that were actually built and
   tested.
 
-## SDLC integration
+## Squad integration
 
-This skill doesn't merge with the `sdlc` skill — it keeps owning MCP-specific
+This skill doesn't merge with the `squad` skill — it keeps owning MCP-specific
 judgment (scope, tool-surface design, docs, OAuth) and only *borrows* its
 questioning discipline and two of its persona subagents for the generic
 parts of the work:
 
 - **Requirements gathering** (Step 2) always asks one focused question batch
-  and confirms scope before design, same as sdlc's kickoff/Analyze gate; for
+  and confirms scope before design, same as squad's kickoff/Analyze gate; for
   multi-server or unfamiliar-domain requests it can hand off to
-  **`sdlc-product-manager`** instead of improvising the scope.
-- **`sdlc-developer`** implements the server (Step 4) — given the resolved
+  **`squad-product-manager`** instead of improvising the scope.
+- **`squad-developer`** implements the server (Step 4) — given the resolved
   tool surface plus this skill's `SKILL.md` as the spec.
-- **`sdlc-reviewer`** + **`sdlc-secops`** review it in parallel (Step 6) —
+- **`squad-reviewer`** + **`squad-secops`** review it in parallel (Step 6) —
   correctness against the edge cases above, and security (secrets, injection,
-  timeout surface). Findings loop back to `sdlc-developer`, bounded to 3
+  timeout surface). Findings loop back to `squad-developer`, bounded to 3
   rounds before escalating.
 
-This is a lightweight borrow: no `docs/sdlc/` artifact trail or `STATE.md` is
+This is a lightweight borrow: no `docs/squad/` artifact trail or `STATE.md` is
 created. If those subagents aren't installed (see
-[`skills/sdlc/README.md#install`](../sdlc/README.md#install)), the skill
+[`skills/squad/README.md#install`](../squad/README.md#install)), the skill
 falls back to doing Steps 4 and 6 inline.
 
 ## Installation

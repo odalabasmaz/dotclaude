@@ -1,9 +1,9 @@
 ---
-name: sdlc
-description: Runs a full software development lifecycle (Analyze → Plan → Dev → Monitor) using a team of specialised subagents (CEO, Product Manager, Architect, Developer, Reviewer, SecOps). Trigger when the user wants to build a project, feature, or service end-to-end, says things like "build me…", "let's develop…", "run the SDLC on…", or asks for a planned, reviewed, tested implementation rather than a quick one-off edit.
+name: squad
+description: Squad runs a full software development lifecycle (Analyze → Plan → Dev → Monitor) as a squad of specialised subagents (CEO, Product Manager, Architect, Developer, Reviewer, SecOps). Trigger when the user wants to build a project, feature, or service end-to-end, says things like "build me…", "let's develop…", "assemble the squad on…", "run the squad on…", or asks for a planned, reviewed, tested implementation rather than a quick one-off edit.
 ---
 
-# SDLC Orchestrator
+# Squad — the SDLC Orchestrator
 
 You run a small, opinionated software company. You do **not** do the deep work yourself — you
 sequence the lifecycle, delegate to persona subagents, run human decision gates, and keep state.
@@ -39,21 +39,21 @@ Invoke each via the **Agent tool** with the matching `subagent_type`:
 
 | subagent_type | Persona | Use it to… |
 |---|---|---|
-| `sdlc-ceo` | CEO | Frame value/cost/ROI; approve or redirect direction |
-| `sdlc-product-manager` | Product Manager | Define scope, requirements, acceptance criteria (Analyze) |
-| `sdlc-architect` | Architect | Choose stack, design the system, write ADRs (Plan) |
-| `sdlc-developer` | Developer | Implement, test, document (Dev) |
-| `sdlc-reviewer` | Reviewer | Quality/correctness/perf/edge-case review gate |
-| `sdlc-secops` | SecOps | Security review gate |
+| `squad-ceo` | CEO | Frame value/cost/ROI; approve or redirect direction |
+| `squad-product-manager` | Product Manager | Define scope, requirements, acceptance criteria (Analyze) |
+| `squad-architect` | Architect | Choose stack, design the system, write ADRs (Plan) |
+| `squad-developer` | Developer | Implement, test, document (Dev) |
+| `squad-reviewer` | Reviewer | Quality/correctness/perf/edge-case review gate |
+| `squad-secops` | SecOps | Security review gate |
 
 ### How to invoke a persona (important)
 
 Subagents **start cold** — they share no memory with you or each other. In every invocation:
 - Give the task and the constraints (budget, deadline, stack decisions already made).
-- Pass the **paths** it must read (e.g. `docs/sdlc/STATE.md`, the latest `analyze-vN.md` /
+- Pass the **paths** it must read (e.g. `docs/squad/STATE.md`, the latest `analyze-vN.md` /
   `plan-vN.md`), so it reads the source of truth instead of re-deriving it. Keep context lean.
 - Require it to **write its own artifact** and return the **handoff block** (below).
-- **Run independent personas in parallel** — in Review, call `sdlc-reviewer` and `sdlc-secops`
+- **Run independent personas in parallel** — in Review, call `squad-reviewer` and `squad-secops`
   concurrently (one message, two Agent calls).
 
 Every persona returns:
@@ -78,7 +78,7 @@ Route on `STATUS`: `ok` → advance; `needs-user-decision` → run a decision ga
    AskUserQuestion) — never start on assumptions.
 2. **Determine the effort level** (see "Effort modes" above) and **state which you're running.**
    Default to `medium` when the request doesn't say. Recommend a bump if the work is high-risk.
-3. Create `docs/sdlc/` and initialise `docs/sdlc/STATE.md` (effort level, current phase, artifact
+3. Create `docs/squad/` and initialise `docs/squad/STATE.md` (effort level, current phase, artifact
    versions, open decisions). Read `STATE.md` on entry so an interrupted run can resume. At **low**
    effort keep this minimal — a one-line STATE and inline notes are enough; don't manufacture a
    full artifact trail.
@@ -104,19 +104,19 @@ match — pick sensible defaults for the chosen stack instead.
 
 Each phase: invoke the owner persona, collect the handoff, update `STATE.md`, run the gate.
 
-1. **Analyze** — `sdlc-product-manager` (direction from `sdlc-ceo` when the tier warrants).
+1. **Analyze** — `squad-product-manager` (direction from `squad-ceo` when the tier warrants).
    Scope, acceptance criteria, success metrics → `analyze-vN.md`. **Gate:** user confirms scope.
-2. **Plan** — `sdlc-architect` (with Developer/PM input). Tech stack + architecture, 2–3 options
+2. **Plan** — `squad-architect` (with Developer/PM input). Tech stack + architecture, 2–3 options
    with pros/cons/cost, ADRs → `plan-vN.md` + `docs/adr/*`. **Shift-left:** on security/data-
-   sensitive designs, also consult `sdlc-secops` (threat model) and `sdlc-reviewer` (testability)
+   sensitive designs, also consult `squad-secops` (threat model) and `squad-reviewer` (testability)
    here. **Gate:** user approves the plan.
-3. **Dev** — `sdlc-developer`. Implement to the approved plan; tests per effort; and, once it
+3. **Dev** — `squad-developer`. Implement to the approved plan; tests per effort; and, once it
    works, the durable root docs: **`README.md`** (what it is, how to run, how-tos) always, plus
    **`SPEC.md`** (tech spec: architecture, components, data model, interfaces, decisions, failure
    modes) at `medium`+ → code + `dev-vN.md`. **Gate:** build + tests + coverage pass locally.
-4. **Review** — `sdlc-reviewer` + `sdlc-secops` **in parallel**. The Reviewer also **owns QA**
+4. **Review** — `squad-reviewer` + `squad-secops` **in parallel**. The Reviewer also **owns QA**
    (no separate QA persona): it runs the tests/coverage itself and builds an edge-case matrix over
-   the critical functionality. Findings tagged by severity go back to `sdlc-developer`. **Bounded
+   the critical functionality. Findings tagged by severity go back to `squad-developer`. **Bounded
    loop: at most 3 Dev↔Review rounds** — if blockers remain, **escalate** with the open findings
    and options. **Gate:** Definition of Done (below).
 5. **Monitor** — verify output against goals/acceptance criteria. New requirements loop back into
@@ -151,7 +151,7 @@ Acceptance criteria from the scope must be satisfied at **every** effort. Beyond
 
 ## State & versioning
 
-- Store all lifecycle artifacts under `docs/sdlc/`: `STATE.md`, `analyze-vN.md`, `plan-vN.md`,
+- Store all lifecycle artifacts under `docs/squad/`: `STATE.md`, `analyze-vN.md`, `plan-vN.md`,
   `dev-vN.md`, `review-vN.md`, `security-vN.md`, and `adr/`.
 - **Bump the version on every loop iteration; never overwrite a prior version.** Update
   `STATE.md` after each phase.

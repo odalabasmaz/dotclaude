@@ -1,4 +1,4 @@
-# SDLC Skill
+# Squad Skill
 
 Runs a full software development lifecycle — **Analyze → Plan → Dev → Monitor** — as a small,
 opinionated software company. The skill is the **orchestrator**; the real work is done by six
@@ -9,7 +9,7 @@ persona **subagents** it delegates to.
 You give it product context and requirements. It asks clarifying questions first, picks an
 **effort** level (see below), then drives the lifecycle: defining scope, choosing a stack and
 architecture, implementing with tests, and gating the result through a quality + security review
-before "go live". Everything is documented as versioned artifacts under `docs/sdlc/`, and new
+before "go live". Everything is documented as versioned artifacts under `docs/squad/`, and new
 requirements loop back into Analyze rather than restarting.
 
 ## Effort modes
@@ -26,7 +26,7 @@ defaults to **medium** and tells you which it's running.
 Say *"low effort"*, *"quick"*, or *"the works / production-grade"* to pick; high-risk work
 (auth, payments, data loss) prompts a recommendation to bump up regardless.
 
-Separately from the internal `docs/sdlc/` trail, once the code works the Developer writes durable
+Separately from the internal `docs/squad/` trail, once the code works the Developer writes durable
 docs at the project root: a **`README.md`** (what it is, how to run, how-tos) always, plus a
 **`SPEC.md`** (architecture, components, data model, interfaces, decisions, failure modes) at
 medium and high.
@@ -43,18 +43,18 @@ so that one component owns *control flow* and the others own *domain thinking* �
 
 ```
                          ┌───────────────────────────┐
-      user request ────► │   sdlc skill (orchestrator)│  ◄── owns: phase sequencing,
+      user request ────► │   squad skill (orchestrator)│  ◄── owns: phase sequencing,
                          │   runs on the main thread  │       versioning, gates, state
                          └────────────┬──────────────┘
                                       │ Agent tool (one subagent per persona)
         ┌───────────────┬────────────┼────────────┬───────────────┬───────────────┐
         ▼               ▼            ▼            ▼               ▼               ▼
-   sdlc-ceo   sdlc-product-manager  sdlc-architect  sdlc-developer  sdlc-reviewer  sdlc-secops
+   squad-ceo   squad-product-manager  squad-architect  squad-developer  squad-reviewer  squad-secops
    direction     scope/criteria     stack/design    code + tests    quality gate   security gate
         │               │            │            │               │               │
         └───────────────┴────────────┴──── read/write ───────────┴───────────────┘
                                       ▼
-                         docs/sdlc/  (STATE.md + versioned artifacts + ADRs)
+                         docs/squad/  (STATE.md + versioned artifacts + ADRs)
                                       ▲
                          the shared source of truth every persona reads and writes
 ```
@@ -72,7 +72,7 @@ so that one component owns *control flow* and the others own *domain thinking* �
 - **Cold-start isolation.** Subagents share no memory with the orchestrator or with each other.
   That is deliberate: each persona reasons from a clean, focused context instead of inheriting the
   whole conversation. The orchestrator compensates by passing inputs **by artifact path** (e.g.
-  *"read `docs/sdlc/plan-v2.md` and `docs/sdlc/STATE.md`"*) so every persona reads the source of
+  *"read `docs/squad/plan-v2.md` and `docs/squad/STATE.md`"*) so every persona reads the source of
   truth rather than re-deriving it. Context stays lean and pointer-based.
 - **Least-privilege tooling.** Each persona gets only the tools its role needs — CEO/PM/Architect
   write docs but **cannot edit code**; the Developer is the only persona with edit + Bash;
@@ -82,8 +82,8 @@ so that one component owns *control flow* and the others own *domain thinking* �
 - **Reasoning where the leverage is.** The strongest model sits on **Product Manager (Analyze)**
   and **Architect (Plan)** — scope and architecture are the costliest things to get wrong.
   Execution and review roles run a capable coding model.
-- **Parallelism where it is safe.** Independent personas run concurrently. In Review, `sdlc-reviewer`
-  and `sdlc-secops` are invoked in the same turn (two Agent calls, one message); phases with a real
+- **Parallelism where it is safe.** Independent personas run concurrently. In Review, `squad-reviewer`
+  and `squad-secops` are invoked in the same turn (two Agent calls, one message); phases with a real
   dependency stay sequential.
 
 ### The handoff contract
@@ -106,10 +106,10 @@ The orchestrator routes on `STATUS`: `ok` → advance; `needs-user-decision` →
 
 ### State & versioning
 
-All lifecycle artifacts live under `docs/sdlc/`:
+All lifecycle artifacts live under `docs/squad/`:
 
 ```
-docs/sdlc/
+docs/squad/
 ├── STATE.md            # current phase, active artifact versions, open decisions — the resume point
 ├── analyze-vN.md       # scope, acceptance criteria, success metrics
 ├── plan-vN.md          # architecture & tech stack (2–3 options with trade-offs)
@@ -131,19 +131,19 @@ phase invokes its owner persona, collects the handoff, updates `STATE.md`, and c
 1. **Pick effort first** (low / medium / high — see the table above). It scales both what gets
    built and which personas run: low collapses to Plan → Dev with an inline check; medium runs one
    Reviewer pass; high runs the full parallel Reviewer + SecOps loop.
-2. **Analyze** (`sdlc-product-manager`, direction from `sdlc-ceo`). Scope, acceptance criteria,
+2. **Analyze** (`squad-product-manager`, direction from `squad-ceo`). Scope, acceptance criteria,
    success metrics → `analyze-vN.md`. **Gate:** user confirms scope.
-3. **Plan** (`sdlc-architect`, with Developer/PM input). Tech stack + architecture, 2–3 options with
+3. **Plan** (`squad-architect`, with Developer/PM input). Tech stack + architecture, 2–3 options with
    pros/cons/cost, ADRs → `plan-vN.md` + `docs/adr/*`. On security/data-sensitive designs it
    **shifts left**, consulting SecOps (threat model) and Reviewer (testability) here. **Gate:** user
    approves the plan.
-4. **Dev** (`sdlc-developer`). Implement to the approved plan; tests per effort (≥90% on critical
+4. **Dev** (`squad-developer`). Implement to the approved plan; tests per effort (≥90% on critical
    logic at high); durable `README.md`/`SPEC.md` + `dev-vN.md`. **Gate:** build + tests pass locally.
-5. **Review** (`sdlc-reviewer` + `sdlc-secops`, in parallel). Findings tagged by severity go back to
+5. **Review** (`squad-reviewer` + `squad-secops`, in parallel). Findings tagged by severity go back to
    the Developer. **Bounded loop: at most 3 Dev↔Review rounds**, then escalate. **Gate:** Definition
    of Done — build green, coverage met, zero open blocker/major findings, docs updated, acceptance
    criteria satisfied.
-6. **Monitor** (`sdlc-ceo` + PM). Verify the output against goals. New requirements loop back into
+6. **Monitor** (`squad-ceo` + PM). Verify the output against goals. New requirements loop back into
    **Analyze** — artifacts and product are revised, not restarted.
 
 At consequential decisions the team presents **2–3 concrete options** with trade-offs and a
@@ -154,25 +154,25 @@ default and moves on.
 
 | subagent | Role | Owns / produces |
 |---|---|---|
-| `sdlc-ceo` | CEO | Direction, value/cost/ROI, go/no-go |
-| `sdlc-product-manager` | Product Manager | Scope, requirements, acceptance criteria → `analyze-vN.md` |
-| `sdlc-architect` | Architect | Tech stack, architecture, ADRs → `plan-vN.md` + `adr/` |
-| `sdlc-developer` | Developer | Implementation, tests, docs → code + `dev-vN.md` |
-| `sdlc-reviewer` | Reviewer (+ QA) | Quality/correctness/perf gate **and QA** — runs the tests, builds an edge-case matrix → `review-vN.md` |
-| `sdlc-secops` | SecOps | Security review gate → `security-vN.md` |
+| `squad-ceo` | CEO | Direction, value/cost/ROI, go/no-go |
+| `squad-product-manager` | Product Manager | Scope, requirements, acceptance criteria → `analyze-vN.md` |
+| `squad-architect` | Architect | Tech stack, architecture, ADRs → `plan-vN.md` + `adr/` |
+| `squad-developer` | Developer | Implementation, tests, docs → code + `dev-vN.md` |
+| `squad-reviewer` | Reviewer (+ QA) | Quality/correctness/perf gate **and QA** — runs the tests, builds an edge-case matrix → `review-vN.md` |
+| `squad-secops` | SecOps | Security review gate → `security-vN.md` |
 
 ## Install
 
-The skill lives in `skills/sdlc/`; the personas live in `agents/` and must be installed as
+The skill lives in `skills/squad/`; the personas live in `agents/` and must be installed as
 Claude Code subagents. See the repo root [README](../../README.md#installation) for symlink steps.
 
 ## Design
 
 The full specification this skill and its agents are generated from lives at
-[`prompts/sdlc.md`](../../prompts/sdlc.md) — keep that as the source of truth and regenerate the
+[`prompts/squad.md`](../../prompts/squad.md) — keep that as the source of truth and regenerate the
 files when the process changes.
 
 ## Kickoff
 
-Just describe what you want built, e.g. *"build me a URL-shortener service"* or *"run the SDLC on
+Just describe what you want built, e.g. *"build me a URL-shortener service"* or *"run the squad on
 this feature"*. The team opens with clarifying questions, then begins at **Analyze**.

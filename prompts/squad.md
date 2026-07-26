@@ -1,4 +1,4 @@
-# SDLC "Software Company" — Skill & Subagents Specification
+# Squad — "Software Company" Skill & Subagents Specification
 
 A specification for a Claude Code system that behaves like a small, opinionated software
 company. You give it product context and requirements; a team of specialised personas runs
@@ -6,7 +6,7 @@ the full development lifecycle — Analyze → Plan → Dev → Monitor — chal
 drafting options, and pulling you in at key decisions, until a reviewed, tested product exists.
 
 > This document is the master spec. It is used to generate one orchestrator **skill**
-> (`skills/sdlc/SKILL.md`) and six **subagents** (`.claude/agents/sdlc-*.md`). Keep it as the
+> (`skills/squad/SKILL.md`) and six **subagents** (`.claude/agents/squad-*.md`). Keep it as the
 > single source of truth; regenerate the artifacts from it when the process changes.
 
 ---
@@ -30,12 +30,12 @@ escalation. Subagents do the domain thinking and return a structured result (see
 
 | Subagent (`.claude/agents/`) | Persona | Owns / Produces |
 |---|---|---|
-| `sdlc-ceo` | CEO | Vision, business direction, cost/ROI framing, go/no-go on direction |
-| `sdlc-product-manager` | Product Manager | Requirements, scope, problem statement, acceptance criteria → `analyze-vN.md` |
-| `sdlc-architect` | Architect | Tech stack, system design, trade-offs, cost/resource limits → `plan-vN.md` + ADRs |
-| `sdlc-developer` | Developer | Implementation, tests (per effort; ≥90% on critical logic at `high`), `README.md`/`SPEC.md` + `dev-vN.md` + code |
-| `sdlc-reviewer` | Reviewer (+ QA) | Quality/correctness/performance gate **and QA** (test-plan review, edge-case matrix) → `review-vN.md` |
-| `sdlc-secops` | SecOps | Security review — vulns, authz gaps, secret handling → `security-vN.md` |
+| `squad-ceo` | CEO | Vision, business direction, cost/ROI framing, go/no-go on direction |
+| `squad-product-manager` | Product Manager | Requirements, scope, problem statement, acceptance criteria → `analyze-vN.md` |
+| `squad-architect` | Architect | Tech stack, system design, trade-offs, cost/resource limits → `plan-vN.md` + ADRs |
+| `squad-developer` | Developer | Implementation, tests (per effort; ≥90% on critical logic at `high`), `README.md`/`SPEC.md` + `dev-vN.md` + code |
+| `squad-reviewer` | Reviewer (+ QA) | Quality/correctness/performance gate **and QA** (test-plan review, edge-case matrix) → `review-vN.md` |
+| `squad-secops` | SecOps | Security review — vulns, authz gaps, secret handling → `security-vN.md` |
 
 ### 2.1 Orchestration mechanics
 
@@ -43,7 +43,7 @@ escalation. Subagents do the domain thinking and return a structured result (see
   **Agent tool**, one subagent per persona, and sequences the phases.
 - **Subagents start cold** — they share no memory with the orchestrator or each other. The
   orchestrator MUST pass the inputs each persona needs, primarily **by artifact path** (e.g.
-  "read `docs/sdlc/plan-v2.md` and `docs/sdlc/STATE.md`"), so personas read the source of truth
+  "read `docs/squad/plan-v2.md` and `docs/squad/STATE.md`"), so personas read the source of truth
   instead of re-deriving it. Keep passed context lean and pointer-based.
 - **Run independent personas in parallel.** In Phase 4, invoke Reviewer and SecOps concurrently
   (one message, two Agent calls). Sequence only where there is a real dependency.
@@ -54,7 +54,7 @@ escalation. Subagents do the domain thinking and return a structured result (see
 
 ```yaml
 ---
-name: sdlc-architect
+name: squad-architect
 description: Action-oriented — when to invoke this persona and what it produces, so the
   orchestrator (or the user) routes to it from natural language.
 tools: Read, Grep, Glob, Write, WebSearch   # least privilege per role (see below)
@@ -80,10 +80,10 @@ The skill is what the user triggers; it loads this process and drives it. Its fr
 
 ```yaml
 ---
-name: sdlc
+name: squad
 description: Runs a full software development lifecycle (Analyze → Plan → Dev → Monitor) using
   a team of specialised subagents. Trigger when the user wants to build a project/feature/service
-  end-to-end, says things like "build me…", "let's develop…", "run the SDLC on…", or asks for a
+  end-to-end, says things like "build me…", "let's develop…", "run the squad on…", or asks for a
   planned, reviewed, tested implementation rather than a quick one-off edit.
 ---
 ```
@@ -134,7 +134,7 @@ its artifact). This is what makes the chain reliable:
 
 ```
 PHASE:      <analyze | plan | dev | review | security>
-ARTIFACT:   <path written, e.g. docs/sdlc/plan-v2.md>
+ARTIFACT:   <path written, e.g. docs/squad/plan-v2.md>
 STATUS:     <ok | needs-user-decision | blocked | changes-requested>
 SUMMARY:    <2–4 sentence outcome>
 DECISIONS:  <choices made, with 1-line rationale each>
@@ -148,7 +148,7 @@ gate (§6); `changes-requested` → loop back to Developer; `blocked` → escala
 
 ---
 
-## 5. SDLC workflow
+## 5. Lifecycle workflow
 
 The lifecycle is a loop, not a line. Each phase has an owner, inputs, outputs, and a gate.
 
@@ -241,7 +241,7 @@ Escalations surface the blocker, the options, and a recommendation — concise, 
 Store lifecycle artifacts under a dedicated, versioned directory so history is auditable:
 
 ```
-docs/sdlc/
+docs/squad/
 ├── STATE.md                              # current phase, active versions, open decisions
 ├── analyze-v1.md, analyze-v2.md ...      # scope & requirements
 ├── plan-v1.md, plan-v2.md ...            # architecture & tech stack
@@ -256,7 +256,7 @@ docs/sdlc/
   artifact, and any open decisions. The orchestrator reads it on entry and updates it after each
   phase, so an interrupted run can be resumed.
 
-**Durable product docs at the project root** (distinct from the versioned `docs/sdlc/` trail),
+**Durable product docs at the project root** (distinct from the versioned `docs/squad/` trail),
 produced by the Developer once the implementation works:
 - **`README.md`** *(always)* — what it is and the problem it solves, features, install/run,
   how-tos/usage examples, configuration, known issues.
