@@ -4,7 +4,7 @@ Runs a full software development lifecycle — **Analyze → Plan → Dev → Mo
 opinionated software company. The skill is the **orchestrator**; the real work is done by six
 persona **subagents** it delegates to.
 
-![Squad — a software company that happens to be six AI agents: CEO, Product Manager, Architect, Developer, Reviewer +QA, and SecOps](./squad-hero.png)
+![Squad — a software company that happens to be six AI agents: CEO, Product Manager, Architect, Developer, Reviewer +QA, and SecOps](./images/squad-hero.png)
 
 ## What it does
 
@@ -28,7 +28,7 @@ defaults to **medium** and tells you which it's running.
 Say *"low effort"*, *"quick"*, or *"the works / production-grade"* to pick; high-risk work
 (auth, payments, data loss) prompts a recommendation to bump up regardless.
 
-![The effort dial — low, medium (default), high — scaling the depth of tests, docs, and review](./squad-effort.png)
+![The effort dial — low, medium (default), high — scaling the depth of tests, docs, and review](./images/squad-effort.png)
 
 Separately from the internal `docs/squad/` trail, once the code works the Developer writes durable
 docs at the project root: a **`README.md`** (what it is, how to run, how-tos) always, plus a
@@ -45,7 +45,7 @@ error format, test style) and builds with the grain rather than inventing a new 
 The system is a **single orchestrator plus six cold-start subagents**. Responsibilities are split
 so that one component owns *control flow* and the others own *domain thinking* — they never mix.
 
-![Architecture — the squad orchestrator skill delegates via the Agent tool to six cold-start subagents (CEO, Product Manager, Architect, Developer, Reviewer +QA, SecOps), all reading and writing a shared docs/squad/ store](./squad-architecture.png)
+![Architecture — the squad orchestrator skill delegates via the Agent tool to six cold-start subagents (CEO, Product Manager, Architect, Developer, Reviewer +QA, SecOps), all reading and writing a shared docs/squad/ store](./images/squad-architecture.png)
 
 ### The two roles
 
@@ -116,7 +116,7 @@ from it instead of restarting.
 The orchestrator opens with clarifying questions, picks an effort level, then runs the loop. Each
 phase invokes its owner persona, collects the handoff, updates `STATE.md`, and clears a gate.
 
-![The lifecycle — Analyze → Plan → Dev → Review → Monitor, a loop not a line, with findings looping back to Dev and new requirements back to Analyze](./squad-lifecycle.png)
+![The lifecycle — Analyze → Plan → Dev → Review → Monitor, a loop not a line, with findings looping back to Dev and new requirements back to Analyze](./images/squad-lifecycle.png)
 
 1. **Pick effort first** (low / medium / high — see the table above). It scales both what gets
    built and which personas run: low collapses to Plan → Dev with an inline check; medium runs one
@@ -151,7 +151,7 @@ default and moves on.
 | `squad-reviewer` | Reviewer (+ QA) | Quality/correctness/perf gate **and QA** — runs the tests, builds an edge-case matrix → `review-vN.md` |
 | `squad-secops` | SecOps | Security review gate → `security-vN.md` |
 
-![The squad — six specialists (CEO, Product Manager, Architect, Developer, Reviewer +QA, SecOps), colour-coded by tool privilege: plan/no-code, builds, and reviews](./squad-personas.png)
+![The squad — six specialists (CEO, Product Manager, Architect, Developer, Reviewer +QA, SecOps), colour-coded by tool privilege: plan/no-code, builds, and reviews](./images/squad-personas.png)
 
 ## Install
 
