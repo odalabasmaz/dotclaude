@@ -4,6 +4,8 @@ Runs a full software development lifecycle — **Analyze → Plan → Dev → Mo
 opinionated software company. The skill is the **orchestrator**; the real work is done by six
 persona **subagents** it delegates to.
 
+![Squad — a software company that happens to be six AI agents: CEO, Product Manager, Architect, Developer, Reviewer +QA, and SecOps](./squad-hero.png)
+
 ## What it does
 
 You give it product context and requirements. It asks clarifying questions first, picks an
@@ -26,6 +28,8 @@ defaults to **medium** and tells you which it's running.
 Say *"low effort"*, *"quick"*, or *"the works / production-grade"* to pick; high-risk work
 (auth, payments, data loss) prompts a recommendation to bump up regardless.
 
+![The effort dial — low, medium (default), high — scaling the depth of tests, docs, and review](./squad-effort.png)
+
 Separately from the internal `docs/squad/` trail, once the code works the Developer writes durable
 docs at the project root: a **`README.md`** (what it is, how to run, how-tos) always, plus a
 **`SPEC.md`** (architecture, components, data model, interfaces, decisions, failure modes) at
@@ -41,23 +45,7 @@ error format, test style) and builds with the grain rather than inventing a new 
 The system is a **single orchestrator plus six cold-start subagents**. Responsibilities are split
 so that one component owns *control flow* and the others own *domain thinking* — they never mix.
 
-```
-                         ┌───────────────────────────┐
-      user request ────► │   squad skill (orchestrator)│  ◄── owns: phase sequencing,
-                         │   runs on the main thread  │       versioning, gates, state
-                         └────────────┬──────────────┘
-                                      │ Agent tool (one subagent per persona)
-        ┌───────────────┬────────────┼────────────┬───────────────┬───────────────┐
-        ▼               ▼            ▼            ▼               ▼               ▼
-   squad-ceo   squad-product-manager  squad-architect  squad-developer  squad-reviewer  squad-secops
-   direction     scope/criteria     stack/design    code + tests    quality gate   security gate
-        │               │            │            │               │               │
-        └───────────────┴────────────┴──── read/write ───────────┴───────────────┘
-                                      ▼
-                         docs/squad/  (STATE.md + versioned artifacts + ADRs)
-                                      ▲
-                         the shared source of truth every persona reads and writes
-```
+![Architecture — the squad orchestrator skill delegates via the Agent tool to six cold-start subagents (CEO, Product Manager, Architect, Developer, Reviewer +QA, SecOps), all reading and writing a shared docs/squad/ store](./squad-architecture.png)
 
 ### The two roles
 
@@ -128,6 +116,8 @@ from it instead of restarting.
 The orchestrator opens with clarifying questions, picks an effort level, then runs the loop. Each
 phase invokes its owner persona, collects the handoff, updates `STATE.md`, and clears a gate.
 
+![The lifecycle — Analyze → Plan → Dev → Review → Monitor, a loop not a line, with findings looping back to Dev and new requirements back to Analyze](./squad-lifecycle.png)
+
 1. **Pick effort first** (low / medium / high — see the table above). It scales both what gets
    built and which personas run: low collapses to Plan → Dev with an inline check; medium runs one
    Reviewer pass; high runs the full parallel Reviewer + SecOps loop.
@@ -157,9 +147,11 @@ default and moves on.
 | `squad-ceo` | CEO | Direction, value/cost/ROI, go/no-go |
 | `squad-product-manager` | Product Manager | Scope, requirements, acceptance criteria → `analyze-vN.md` |
 | `squad-architect` | Architect | Tech stack, architecture, ADRs → `plan-vN.md` + `adr/` |
-| `squad-developer` | Developer | Implementation, tests, docs → code + `dev-vN.md` |
+| `squad-developer` | Developer | Implementation, tests, docs (`README.md`/`SPEC.md`) → code + `dev-vN.md` |
 | `squad-reviewer` | Reviewer (+ QA) | Quality/correctness/perf gate **and QA** — runs the tests, builds an edge-case matrix → `review-vN.md` |
 | `squad-secops` | SecOps | Security review gate → `security-vN.md` |
+
+![The squad — six specialists (CEO, Product Manager, Architect, Developer, Reviewer +QA, SecOps), colour-coded by tool privilege: plan/no-code, builds, and reviews](./squad-personas.png)
 
 ## Install
 
